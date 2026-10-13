@@ -1,0 +1,23 @@
+# dependencies and build output
+node_modules/
+dist/
+build/
+.vite/
+coverage/
+
+# local secrets: never commit credentials
+.env
+.env.*
+!.env.example
+.dev.vars
+.dev.vars.*
+*.pem
+*.key
+
+# local runtime state and artifacts
+.data/
+*.log
+.videowright/
+videos/out/
+media/out/
+.DS_Store

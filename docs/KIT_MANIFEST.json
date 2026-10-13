@@ -1,0 +1,17 @@
+{
+  "state": "Documentation kit; application/media not implemented",
+  "files": {
+    "AGENTS.md": "fc3989fd019306af65980baf8889f6a21d86b881c7748ec24ee0c52c7dbdab4a",
+    "FREEBUFF_PROMPT.md": "4fd22683c26a739ef1106adbe9a794248bfe017f8f7dbcc9a3be2581cc49e6ea",
+    "PROJECT_BUILD.md": "fb169723b0394801ef8ae4810e38e42621715c10c45dce66b69bf10362c4d260",
+    "README.md": "7ff1b05f1507419e16762abcd5fdc73fa853cfc9facb16076db665cd6a13bf87",
+    "SESSION_CONTINUATION.md": "3dd76274bac4ad0ecacfbed0da9dd4c23e5567100ea84a953ee5a9f7607d21e1",
+    "docs/BUILT_WITH.md": "c9c627ece232df04c19c5bc3a1a7f52c1aaa73999533d2ae9830260c2e44a70b",
+    "docs/COMPETITION_NOTES.md": "6c7e6fc4d0b31a29b4f00f915c834d0aa7c4884d04ff2feeb9acbc1a45e182fb",
+    "docs/COMPETITION_SOURCE.txt": "a6d35d41faad5dd72352950396452d82d46ae2db1a9a100ee9114364d95e2375",
+    "docs/DEVPOST_PROJECT_STORY.md": "e7bcc10e6627df3bbecd2f184f4c3dcd759bf6fbd4a560c813dd48e95952c545",
+    "docs/MEDIA_WORKFLOWS.md": "0ad7f4327c96a05916b7680d0da3692d7823d71b4fe964ebe49318577248351c",
+    "docs/PROGRESS.md": "3f0c1da8472a4c8bc8860f6ffecc5d321fc50b5402563be8960a2dbafa0c379a",
+    "docs/SESSION_TOOLING.md": "d75c33f3b3b9c9e553bf3684e9fa3014b8e326636edec3ceecbc13d83864fc92"
+  }
+}
