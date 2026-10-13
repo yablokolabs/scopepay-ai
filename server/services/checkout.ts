@@ -51,7 +51,17 @@ export async function startCheckout(
     throw new CheckoutError('scope_not_found', `No scope version with id ${input.scopeId}.`, [], 404);
   }
 
-  // 1. The buyer accepts this exact version. Idempotent for a repeated click.
+  const priorAttempts = await store.listPaymentAttemptsForScope(input.scopeId);
+
+  // 1. A live attempt for this same hash is a duplicate submission, not a new
+  // purchase. This is checked before acceptance, which only accepts a scope that
+  // has not been ordered yet, so a repeated click reuses the original order.
+  const existing = priorAttempts.find((attempt) => attempt.scopeHash === input.hash && isLiveAttempt(attempt));
+  if (existing) {
+    return { attempt: existing, approvalUrl: existing.approvalUrl, reused: true };
+  }
+
+  // 2. The buyer accepts this exact version. Idempotent for a repeated click.
   await scopes.recordAcceptance({
     scopeId: input.scopeId,
     acceptance: {
@@ -62,7 +72,7 @@ export async function startCheckout(
     }
   });
 
-  // 2. Server-side gate: status, ownership, hash, amount and currency.
+  // 3. Server-side gate: status, ownership, hash, amount and currency.
   const { scope: payable } = await scopes.assertPayable({
     scopeId: input.scopeId,
     hash: input.hash,
@@ -72,12 +82,6 @@ export async function startCheckout(
   });
 
   const attempts = await store.listPaymentAttemptsForScope(input.scopeId);
-
-  // 3. A live attempt for this same hash is a duplicate submission, not a new purchase.
-  const live = attempts.find((attempt) => attempt.scopeHash === payable.hash && isLiveAttempt(attempt));
-  if (live) {
-    return { attempt: live, approvalUrl: live.approvalUrl, reused: true };
-  }
 
   // 4. Unpaid attempts for an older hash are abandoned; they are never re-priced.
   for (const stale of attempts.filter((attempt) => attempt.scopeHash !== payable.hash && isLiveAttempt(attempt))) {
@@ -160,9 +164,11 @@ export async function captureScopeOrder(
     throw new CheckoutError('scope_not_found', `No scope version with id ${input.scopeId}.`, [], 404);
   }
 
+  // The attempt is resolved by the provider order id, so a request made from a
+  // newer scope page can never be pointed at an older, superseded order.
   const attempts = await store.listPaymentAttemptsForScope(input.scopeId);
   const attempt = input.orderId
-    ? attempts.find((candidate) => candidate.paypalOrderId === input.orderId)
+    ? (await store.findPaymentAttemptByOrderId(input.orderId)) ?? attempts.find((c) => c.paypalOrderId === input.orderId)
     : attempts[attempts.length - 1];
   if (!attempt || !attempt.paypalOrderId) {
     throw new CheckoutError('attempt_not_found', 'No PayPal sandbox order exists for this scope.', [], 404);
@@ -170,18 +176,42 @@ export async function captureScopeOrder(
   if (attempt.state === 'captured') {
     return { attempt, captured: true, message: 'This order was already captured; the receipt is unchanged.' };
   }
-  // Stale guard: the provider order is only ever captured against the hash it was created for.
-  if (attempt.scopeHash !== scope.hash) {
+  if (attempt.scopeId !== scope.id) {
+    throw new CheckoutError(
+      'attempt_scope_mismatch',
+      'That PayPal order belongs to a different scope version.',
+      [`order created for ${attempt.scopeId}`],
+      409
+    );
+  }
+
+  // Stale guard: the owning version must still be the current payable one, with
+  // an unchanged hash. This is a precondition, checked before the provider is
+  // called, so a superseded order is never captured.
+  const owning = await store.getScope(attempt.scopeId);
+  if (!owning || owning.hash !== attempt.scopeHash) {
+    throw new CheckoutError(
+      'stale_scope',
+      'The scope changed after this order was created. Nothing was captured.',
+      [`attempt hash ${attempt.scopeHash.slice(0, 12)} vs current ${owning?.hash.slice(0, 12) ?? 'missing'}`],
+      409
+    );
+  }
+  if (owning.status === 'paid') {
+    return { attempt, captured: true, message: 'This scope version is already paid; the receipt is unchanged.' };
+  }
+  if (owning.status !== 'order_created' && owning.status !== 'accepted') {
     await store.updatePaymentAttempt({
       ...attempt,
       state: 'expired',
-      lastError: 'Scope changed after the order was created; capture refused.',
+      lastError: `Scope version is ${owning.status}; capture refused.`,
       updatedAt: new Date().toISOString()
     });
     throw new CheckoutError(
       'stale_scope',
-      'The scope changed after this order was created. Nothing was captured — create a new approved version.',
-      [`attempt hash ${attempt.scopeHash.slice(0, 12)} vs current ${scope.hash.slice(0, 12)}`]
+      'This scope version is no longer payable, so nothing was captured.',
+      [`scope status ${owning.status}`],
+      409
     );
   }
 
@@ -206,10 +236,15 @@ export async function captureScopeOrder(
     updatedAt: new Date().toISOString(),
     lastError: state === 'captured' ? null : result.providerMessage
   };
+
+  // Marking the scope paid first means a failure here cannot leave a local
+  // receipt claiming money moved: the attempt stays reconcilable instead.
+  if (state === 'captured') {
+    await scopes.markPaid({ scopeId: owning.id, scopeHash: owning.hash });
+  }
   await store.updatePaymentAttempt(updated);
 
   if (state === 'captured') {
-    await scopes.markPaid({ scopeId: scope.id, scopeHash: scope.hash });
     return {
       attempt: updated,
       captured: true,

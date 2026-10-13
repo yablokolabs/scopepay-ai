@@ -1,10 +1,9 @@
-/// <reference types="vitest" />
 import react from '@vitejs/plugin-react';
-import { defineConfig } from 'vitest/config';
+import { defineConfig } from 'vite';
 
 /**
- * The client lives in app/, the server and domain code in server/ and lib/.
- * Tests always run from the repository root over tests/**.
+ * The client lives in app/ and talks to the Hono server on 8787.
+ * Test configuration is separate: see vitest.config.ts.
  */
 export default defineConfig({
   plugins: [react()],
@@ -16,10 +15,5 @@ export default defineConfig({
       '/api': { target: 'http://localhost:8787', changeOrigin: true },
       '/health': { target: 'http://localhost:8787', changeOrigin: true }
     }
-  },
-  test: {
-    root: '.',
-    include: ['tests/**/*.test.ts'],
-    environment: 'node'
   }
 });

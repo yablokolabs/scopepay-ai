@@ -40,7 +40,9 @@ function errorResponse(error: unknown): { body: unknown; status: number } {
     return { body: { error: { code: error.code, message: error.message, details: error.details } }, status: error.status };
   }
   if (error instanceof ScopeError) {
-    return { body: { error: { code: error.code, message: error.message, details: error.details } }, status: 409 };
+    // A missing scope version is a 404; every other scope error is a conflict.
+    const status = error.code === 'scope_not_found' ? 404 : 409;
+    return { body: { error: { code: error.code, message: error.message, details: error.details } }, status };
   }
   if (error instanceof CscsError) {
     return {
