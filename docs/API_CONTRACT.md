@@ -54,7 +54,7 @@ Read-only routes (`/health`, `/api/config`, `/api/catalog`, `/api/fixtures`, `/a
 | `history` | all versions for the same brief |
 | `attempts` | payment attempts for this scope: `state`, `providerStatus`, `captureId`, `paypalOrderId`, `expectedAmountMinor`, `scopeHash`, `approvalUrl`, `updatedAt`, `lastError` |
 
-`409 scope_not_found` when the id does not exist (domain error codes are mapped to 409 by `errorResponse`).
+`404 scope_not_found` when the id does not exist. Every other scope conflict maps to 409 (conflict); an invalid request body is rejected by Zod with 400 before any domain code runs.
 
 ## Workflow routes
 
@@ -87,7 +87,7 @@ An `approve` or `edit` creates a **new** version whose `parentId` is the reviewe
 
 | status | code |
 | --- | --- |
-| 409 | `scope_not_found`, `scope_not_draft`, `invalid_review`, `invalid_lines` |
+| 404/409 | `scope_not_found` is 404; `scope_not_draft`, `invalid_review`, `invalid_lines` are 409 |
 
 ### `POST /api/scopes/:id/accept`
 
@@ -97,7 +97,7 @@ Buyer acceptance (`BuyerAcceptance`): `{ hash (64 hex), actor (1–120), confirm
 
 | status | code | when |
 | --- | --- | --- |
-| 409 | `scope_not_found` | unknown id |
+| 404 | `scope_not_found` | unknown id |
 | 409 | `scope_not_awaiting_buyer` | version is a draft, rejected or superseded |
 | 409 | `hash_mismatch` | the accepted hash is not this version's hash |
 | 409 | `amount_mismatch` | the echoed amount is not the stored amount |
@@ -152,16 +152,18 @@ Body (`ChangeRequest`): `{ "text": string (5–4000), "requestedBy": string (1�
 
 Classifies the request with Apertus and, when it adds work, creates a **new draft version** derived from the current lines.
 
-`201` → `{ assessment, deltaAmountMinor, deltaFormatted, supersededPaidVersion, currentScope, history, warnings, extraction }`
+`201` → `{ assessment, deltaAmountMinor, deltaFormatted, createdNewVersion, supersededPaidVersion, currentScope, history, warnings, extraction }`
 
 - `deltaAmountMinor` is computed **server-side** from the catalog; the value the model returns inside `assessment.deltaAmountMinor` is overwritten before it is returned.
 - `supersededPaidVersion: true` reports that a paid version was intentionally left untouched: a paid scope keeps its own receipt and is never re-priced.
+- `createdNewVersion: true` means a new version was created and `currentScope` is that new version; `false` means the model mapped no catalog line, so the agreed version was left untouched with a zero delta and the request needs a human decision.
+- `warnings` merges model-output adjustments with catalog ceilings: a change that asks for more of an item than the catalog sells is capped at the maximum and the shortfall is reported here instead of being priced.
 - `assessment.changeClass` is one of `no_change`, `clarification`, `in_scope_adjustment`, `new_scope_delta`, with `confident` false when the model's answer could not be classified.
 
 | status | code |
 | --- | --- |
 | 400 | `invalid_request` |
-| 409 | `scope_not_found`, `invalid_lines` |
+| 409 | `invalid_lines` (an unknown scope is a 404) |
 | 502 | `model_*` |
 | 503 | `model_missing_key` |
 

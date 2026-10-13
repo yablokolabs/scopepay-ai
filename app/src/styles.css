@@ -1,0 +1,337 @@
+:root {
+  --paper: #fbf7f0;
+  --paper-raised: #ffffff;
+  --ink: #2b1a2f;
+  --ink-soft: #5f5266;
+  --plum: #472a4f;
+  --teal: #12736b;
+  --teal-soft: #e3f2f0;
+  --amber: #8a5a00;
+  --amber-bg: #fdf3dc;
+  --red-ink: #8c1d1d;
+  --red-bg: #fbe9e7;
+  --line: #ded4c6;
+  --radius: 10px;
+  --shadow: 0 1px 2px rgba(43, 26, 47, 0.08);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: "Iowan Old Style", "Palatino Linotype", Georgia, serif;
+  font-size: 17px;
+  line-height: 1.55;
+}
+
+a {
+  color: var(--teal);
+}
+
+h1,
+h2,
+h3 {
+  font-family: "Avenir Next", "Segoe UI", system-ui, sans-serif;
+  line-height: 1.25;
+  margin: 0 0 0.5rem;
+}
+
+h1 {
+  font-size: 1.6rem;
+}
+h2 {
+  font-size: 1.2rem;
+}
+h3 {
+  font-size: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--ink-soft);
+}
+
+.page {
+  max-width: 60rem;
+  margin: 0 auto;
+  padding: 1.5rem 1.25rem 3rem;
+}
+
+.masthead {
+  border-bottom: 2px solid var(--plum);
+  padding-bottom: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.masthead p {
+  margin: 0;
+  color: var(--ink-soft);
+}
+
+.steps {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  list-style: none;
+  margin: 1rem 0 1.5rem;
+  padding: 0;
+  font-family: "Avenir Next", "Segoe UI", system-ui, sans-serif;
+  font-size: 0.85rem;
+}
+
+.steps li {
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 0.2rem 0.75rem;
+  background: var(--paper-raised);
+}
+
+.steps li[aria-current="step"] {
+  border-color: var(--plum);
+  background: var(--plum);
+  color: #fff;
+}
+
+.card {
+  background: var(--paper-raised);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 1.1rem 1.25rem;
+  margin-bottom: 1.25rem;
+}
+
+.sandbox-banner {
+  border: 2px dashed var(--amber);
+  background: var(--amber-bg);
+  color: var(--amber);
+  border-radius: var(--radius);
+  padding: 0.7rem 1rem;
+  margin-bottom: 1rem;
+  font-family: "Avenir Next", "Segoe UI", system-ui, sans-serif;
+  font-size: 0.95rem;
+}
+
+.sandbox-tag {
+  display: inline-block;
+  background: var(--amber-bg);
+  color: var(--amber);
+  border: 1px solid var(--amber);
+  border-radius: 4px;
+  font-family: "Avenir Next", "Segoe UI", system-ui, sans-serif;
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  padding: 0.05rem 0.4rem;
+  vertical-align: middle;
+}
+
+label {
+  display: block;
+  font-family: "Avenir Next", "Segoe UI", system-ui, sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+
+textarea,
+input[type="text"] {
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 0.6rem 0.7rem;
+  font-family: inherit;
+  font-size: 1rem;
+  background: #fff;
+  color: var(--ink);
+}
+
+textarea {
+  min-height: 9rem;
+  resize: vertical;
+}
+
+button {
+  font-family: "Avenir Next", "Segoe UI", system-ui, sans-serif;
+  font-size: 0.95rem;
+  border-radius: var(--radius);
+  border: 1px solid var(--plum);
+  background: var(--plum);
+  color: #fff;
+  padding: 0.55rem 1rem;
+  cursor: pointer;
+}
+
+button.secondary {
+  background: transparent;
+  color: var(--plum);
+}
+
+button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+button:focus-visible,
+a:focus-visible,
+textarea:focus-visible,
+input:focus-visible,
+[tabindex]:focus-visible {
+  outline: 3px solid var(--teal);
+  outline-offset: 2px;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  align-items: center;
+  margin-top: 0.9rem;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+}
+
+th,
+td {
+  text-align: left;
+  padding: 0.45rem 0.5rem;
+  border-bottom: 1px solid var(--line);
+  vertical-align: top;
+}
+
+td.amount,
+th.amount {
+  text-align: right;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.total {
+  font-family: "Avenir Next", "Segoe UI", system-ui, sans-serif;
+  font-weight: 700;
+  font-size: 1.05rem;
+}
+
+.quote {
+  display: block;
+  border-left: 3px solid var(--teal);
+  background: var(--teal-soft);
+  padding: 0.35rem 0.6rem;
+  margin-top: 0.35rem;
+  font-style: italic;
+  font-size: 0.9rem;
+}
+
+.hash {
+  font-family: ui-monospace, "SFMono-Regular", Menlo, monospace;
+  font-size: 0.8rem;
+  word-break: break-all;
+  color: var(--ink-soft);
+}
+
+.status {
+  border-radius: var(--radius);
+  padding: 0.6rem 0.8rem;
+  margin: 0.75rem 0 0;
+  font-family: "Avenir Next", "Segoe UI", system-ui, sans-serif;
+  font-size: 0.9rem;
+  border: 1px solid var(--line);
+  background: #fff;
+}
+
+.status[data-kind="error"] {
+  border-color: var(--red-ink);
+  background: var(--red-bg);
+  color: var(--red-ink);
+}
+
+.status[data-kind="success"] {
+  border-color: var(--teal);
+  background: var(--teal-soft);
+  color: var(--teal);
+}
+
+.status[data-kind="pending"] {
+  border-color: var(--amber);
+  background: var(--amber-bg);
+  color: var(--amber);
+}
+
+.muted {
+  color: var(--ink-soft);
+  font-size: 0.9rem;
+}
+
+.pill-list {
+  margin: 0.4rem 0 0;
+  padding-left: 1.1rem;
+}
+
+.check-row {
+  display: flex;
+  gap: 0.6rem;
+  align-items: flex-start;
+  margin-top: 0.9rem;
+  font-size: 0.95rem;
+}
+
+.check-row input {
+  margin-top: 0.35rem;
+  width: 1.1rem;
+  height: 1.1rem;
+  flex: none;
+}
+
+.grid {
+  display: grid;
+  gap: 1.25rem;
+}
+
+@media (min-width: 52rem) {
+  .grid.two {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.definition {
+  margin: 0;
+}
+
+.definition dt {
+  font-family: "Avenir Next", "Segoe UI", system-ui, sans-serif;
+  font-size: 0.75rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
+.definition dd {
+  margin: 0 0 0.6rem;
+}
+
+.tag {
+  display: inline-block;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 0 0.5rem;
+  font-size: 0.78rem;
+  font-family: "Avenir Next", "Segoe UI", system-ui, sans-serif;
+  background: var(--paper);
+}
+
+.pre {
+  white-space: pre-wrap;
+  font-family: ui-monospace, "SFMono-Regular", Menlo, monospace;
+  font-size: 0.82rem;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 0.6rem;
+  max-height: 18rem;
+  overflow: auto;
+}

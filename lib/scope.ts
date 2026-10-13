@@ -120,6 +120,8 @@ export interface ProposeChangeResult {
   scope: ScopeVersion;
   deltaAmountMinor: number;
   superseded: boolean;
+  /** Requests the catalog cannot sell as asked, reported instead of silently charged. */
+  warnings: string[];
 }
 
 export interface ScopeView {
@@ -546,21 +548,32 @@ export function createScopeService(deps: ScopeDeps) {
     const current = await requireScope(input.scopeId);
     const assessment = input.assessment;
 
-    const noNewLines = assessment.lines.length === 0;
-    const informational =
-      assessment.changeClass === 'no_change' || assessment.changeClass === 'clarification';
-
-    // An informational change never touches a paid order and never fabricates a
-    // new version to pay for.
-    if (informational && noNewLines) {
-      return { scope: current, deltaAmountMinor: 0, superseded: false };
+    // With no valid catalog line there is nothing the server can price, whatever
+    // class the model chose. The agreed version is left exactly as it is instead
+    // of creating a new version that claims a delta it cannot substantiate.
+    if (assessment.lines.length === 0) {
+      return { scope: current, deltaAmountMinor: 0, superseded: false, warnings: [] };
     }
 
     const brief = await requireBrief(current.briefId);
     const deltaLines = assessment.lines.map(normaliseLine);
-    const lines = assertValidLines(mergeLines(current.lines, deltaLines), brief.canonicalText);
+    const warnings: string[] = [];
 
-    const deltaAmountMinor = computeAmountMinor(lines, catalog) - current.amountMinor;
+    // A change cannot buy more of an item than the catalog sells. Quantities are
+    // capped at the catalog maximum and the shortfall is reported to the client
+    // rather than failing the whole request or charging for it silently.
+    const merged = mergeLines(current.lines, deltaLines);
+    const lines = merged.map((line) => {
+      const item = catalog.items.find((candidate) => candidate.id === line.catalogItemId);
+      if (!item || line.quantity <= item.maxQty) return line;
+      warnings.push(
+        `${item.label} is at its catalog maximum of ${item.maxQty} ${item.unit}, so the extra ${line.quantity - item.maxQty} ${item.unit} in this request cannot be added. It needs a separate agreement.`
+      );
+      return { ...line, quantity: item.maxQty };
+    });
+
+    const validLines = assertValidLines(lines, brief.canonicalText);
+    const deltaAmountMinor = computeAmountMinor(validLines, catalog) - current.amountMinor;
     const exclusions = unique([...current.exclusions, ...assessment.exclusions]);
 
     const next = buildScope({
@@ -568,7 +581,7 @@ export function createScopeService(deps: ScopeDeps) {
       parentId: current.id,
       briefId: current.briefId,
       version: current.version + 1,
-      lines,
+      lines: validLines,
       exclusions,
       revisionLimit: current.revisionLimit,
       status: 'draft',
@@ -585,7 +598,7 @@ export function createScopeService(deps: ScopeDeps) {
       await store.patchScopeStatus(current.id, { status: 'superseded' });
     }
 
-    return { scope: next, deltaAmountMinor, superseded };
+    return { scope: next, deltaAmountMinor, superseded, warnings };
   }
 
   async function getScopeView(input: { scopeId: string }): Promise<ScopeView> {

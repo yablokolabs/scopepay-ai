@@ -598,4 +598,60 @@ describe('proposeChange', () => {
     expect(result.superseded).toBe(false);
     expect(store.scopes.size).toBe(2);
   });
+
+  it('caps a change at the catalog maximum and reports the shortfall instead of failing', async () => {
+    // contact-form sells at most one per order; a second requested form must not
+    // be priced and must not crash the whole change request.
+    const { store, service } = setup();
+    const { reviewed } = await createAwaitingBuyer(service, [line('contact-form', 1)]);
+
+    const result = await service.proposeChange({
+      scopeId: reviewed.id,
+      changeText: 'Please add one more contact form.',
+      requestedBy: BUYER,
+      assessment: {
+        changeClass: 'in_scope_adjustment',
+        summary: 'Buyer asked for a second contact form.',
+        lines: [line('contact-form', 1)],
+        exclusions: [],
+        deltaAmountMinor: 0,
+        confident: true,
+        modelNotes: ''
+      }
+    });
+
+    expect(result.deltaAmountMinor).toBe(0);
+    expect(result.warnings).toHaveLength(1);
+    expect(result.warnings[0]).toContain('catalog maximum');
+    expect(result.scope.lines.find((candidate) => candidate.catalogItemId === 'contact-form')?.quantity).toBe(1);
+    expect(store.scopes.size).toBe(3);
+  });
+
+  it('leaves the agreed version untouched when a delta class has no catalog lines', async () => {
+    // Observed in a live run: the model classified a request as new_scope_delta but
+    // returned no usable line, so a version claiming a zero delta must not be created.
+    const { store, service } = setup();
+    const { reviewed } = await createAwaitingBuyer(service, [line('landing-page', 1)]);
+
+    const result = await service.proposeChange({
+      scopeId: reviewed.id,
+      changeText: 'Please add online ordering with card payments.',
+      requestedBy: BUYER,
+      assessment: {
+        changeClass: 'new_scope_delta',
+        summary: 'Request is outside the catalog.',
+        lines: [],
+        exclusions: [],
+        deltaAmountMinor: 0,
+        confident: false,
+        modelNotes: 'Nothing in the catalog covers this.'
+      }
+    });
+
+    expect(result.scope.id).toBe(reviewed.id);
+    expect(result.scope.status).toBe('awaiting_buyer');
+    expect(result.deltaAmountMinor).toBe(0);
+    expect(result.superseded).toBe(false);
+    expect(store.scopes.size).toBe(2);
+  });
 });

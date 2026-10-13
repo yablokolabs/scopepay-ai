@@ -5,7 +5,7 @@
 ```bash
 npm install
 cp .env.example .env      # fill in the values listed below; .env is git-ignored
-npm run dev               # API on :8787 + Vite client on :5173
+npm run dev               # API on :8790 + Vite client on :5173
 npm run typecheck         # tsc --noEmit
 npm test                  # vitest run
 ```
@@ -30,7 +30,7 @@ Values live in `.env` locally or in the host's secret store; `.env` is git-ignor
 | `PAYPAL_IDEMPOTENCY_KEY_PREFIX` | prefix for the local request key sent as `Paypal-Request-Id` (default `scopepay`) |
 | `MERCHANT_ID` / `MERCHANT_NAME` | the single sandbox merchant this build is configured for |
 | `PUBLIC_BASE_URL` | absolute base URL used for PayPal return/cancel URLs (default `http://localhost:<PORT>`) |
-| `PORT` | API port, default `8787` |
+| `PORT` | API port, default `8790` |
 | `SCOPEPAY_STORE` | `file` (default), `memory`, or `d1` |
 | `SCOPEPAY_STORE_FILE` | optional path override for the file store (default `.data/scopepay-store.json`) |
 

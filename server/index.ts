@@ -58,7 +58,7 @@ function buildPaypalClient(): PaypalClient | null {
 const store = createStore();
 const cscs = buildCscsConfig();
 const paypal = buildPaypalClient();
-const port = Number(process.env.PORT ?? '8787');
+const port = Number(process.env.PORT ?? '8790');
 
 const app = createApp({
   store,

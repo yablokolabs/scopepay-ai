@@ -30,9 +30,27 @@ export class CheckoutError extends Error {
 export interface CheckoutDeps {
   store: Store;
   scopes: ScopeService;
-  paypal: PaypalClient;
+  /** Null until the merchant configures sandbox credentials; the domain checks still run. */
+  paypal: PaypalClient | null;
   requestKeyPrefix: string;
   publicBaseUrl: string;
+}
+
+/**
+ * Provider access is required only once the deterministic scope checks have
+ * passed, so a stale or mismatched request is answered on its own merits even
+ * when credentials are missing.
+ */
+function requirePaypal(deps: CheckoutDeps): PaypalClient {
+  if (!deps.paypal) {
+    throw new CheckoutError(
+      'paypal_not_configured',
+      'PayPal sandbox credentials are not configured on this server. Set PAYPAL_CLIENT_ID and PAYPAL_CLIENT_SECRET.',
+      [],
+      503
+    );
+  }
+  return deps.paypal;
 }
 
 /** Active states mean "an order already exists for this scope hash". */
@@ -44,7 +62,7 @@ export async function startCheckout(
   deps: CheckoutDeps,
   input: { scopeId: string; hash: string; actor: string; confirmedAmountMinor: number; confirmedCurrency: 'USD' }
 ): Promise<{ attempt: PaymentAttempt; approvalUrl: string | null; reused: boolean }> {
-  const { store, scopes, paypal } = deps;
+  const { store, scopes } = deps;
 
   const scope = await store.getScope(input.scopeId);
   if (!scope) {
@@ -98,6 +116,8 @@ export async function startCheckout(
     throw new CheckoutError('already_paid', 'This scope version already has a captured sandbox payment.', [], 409);
   }
 
+  // Every deterministic check has passed; only now does the provider get called.
+  const paypal = requirePaypal(deps);
   const requestKey = `${deps.requestKeyPrefix}:${payable.id}:${payable.hash}`;
   const order = await paypal.createOrder({
     scopeRef: payable.id,
@@ -158,7 +178,7 @@ export async function captureScopeOrder(
   deps: CheckoutDeps,
   input: { scopeId: string; orderId?: string }
 ): Promise<{ attempt: PaymentAttempt; captured: boolean; message: string }> {
-  const { store, scopes, paypal } = deps;
+  const { store, scopes } = deps;
   const scope = await store.getScope(input.scopeId);
   if (!scope) {
     throw new CheckoutError('scope_not_found', `No scope version with id ${input.scopeId}.`, [], 404);
@@ -215,7 +235,7 @@ export async function captureScopeOrder(
     );
   }
 
-  const result = await paypal.captureOrder({
+  const result = await requirePaypal(deps).captureOrder({
     orderId: attempt.paypalOrderId,
     expected: {
       amountMinor: attempt.expectedAmountMinor,
@@ -263,7 +283,7 @@ export async function reconcileScope(
   deps: CheckoutDeps,
   input: { scopeId: string; orderId?: string }
 ): Promise<{ attempt: PaymentAttempt | null; providerStatus: string | null; changed: boolean; source: string }> {
-  const { store, scopes, paypal } = deps;
+  const { store, scopes } = deps;
   const attempts = await store.listPaymentAttemptsForScope(input.scopeId);
   const attempt = input.orderId
     ? attempts.find((candidate) => candidate.paypalOrderId === input.orderId)
@@ -276,7 +296,7 @@ export async function reconcileScope(
     return { attempt, providerStatus: attempt.providerStatus, changed: false, source: 'already terminal' };
   }
 
-  const snapshot = await paypal.getOrder(attempt.paypalOrderId);
+  const snapshot = await requirePaypal(deps).getOrder(attempt.paypalOrderId);
   let state: PaymentState = attempt.state;
   if (snapshot.captureId && snapshot.captureStatus === 'COMPLETED') {
     state = 'captured';
@@ -325,7 +345,10 @@ export async function handlePaypalWebhook(
   deps: CheckoutDeps,
   input: { headers: Record<string, string | undefined>; rawBody: string }
 ): Promise<{ accepted: boolean; reason: string; event: EventRecord; applied: boolean }> {
-  const { store, scopes, paypal } = deps;
+  const { store, scopes } = deps;
+  // A callback can never be trusted without a signature check, so this is the
+  // one place where the provider is required before any other work happens.
+  const paypal = requirePaypal(deps);
   const receivedAt = new Date().toISOString();
   const parsedBody = (() => {
     try {

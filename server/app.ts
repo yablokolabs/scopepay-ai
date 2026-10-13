@@ -10,6 +10,7 @@ import { z } from 'zod';
 import { CATALOG, STANDARD_EXCLUSIONS } from '../lib/catalog.js';
 import { CscsError, classifyChange, extractScope, type CscsConfig } from '../lib/cscs.js';
 import { PaypalError, type PaypalClient } from '../lib/paypal.js';
+
 import { formatMinor, priceBreakdown } from '../lib/pricing.js';
 import type { Store } from '../lib/persistence.js';
 import { ScopeError, type ScopeService } from '../lib/scope.js';
@@ -79,21 +80,9 @@ export function createApp(env: AppEnv): Hono {
   const deps: CheckoutDeps = {
     store: env.store,
     scopes: env.scopes,
-    paypal: env.paypal as PaypalClient,
+    paypal: env.paypal,
     requestKeyPrefix: env.requestKeyPrefix,
     publicBaseUrl: env.publicBaseUrl
-  };
-
-  const withPaypal = <T>(handler: () => Promise<T>): Promise<T> => {
-    if (!env.paypal) {
-      throw new CheckoutError(
-        'paypal_not_configured',
-        'PayPal sandbox credentials are not configured on this server. Set PAYPAL_CLIENT_ID and PAYPAL_CLIENT_SECRET.',
-        [],
-        503
-      );
-    }
-    return handler();
   };
 
   app.get('/health', (c) =>
@@ -244,7 +233,7 @@ export function createApp(env: AppEnv): Hono {
           confirmedCurrency: z.literal('USD')
         })
         .parse(await c.req.json());
-      const result = await withPaypal(() => startCheckout(deps, { scopeId: c.req.param('id'), ...body }));
+      const result = await startCheckout(deps, { scopeId: c.req.param('id'), ...body });
       return c.json(
         {
           attempt: result.attempt,
@@ -264,7 +253,7 @@ export function createApp(env: AppEnv): Hono {
   app.post('/api/scopes/:id/capture', async (c) => {
     try {
       const body = z.object({ orderId: z.string().min(1).optional() }).parse(await c.req.json().catch(() => ({})));
-      const result = await withPaypal(() => captureScopeOrder(deps, { scopeId: c.req.param('id'), orderId: body.orderId }));
+      const result = await captureScopeOrder(deps, { scopeId: c.req.param('id'), orderId: body.orderId });
       const view = await env.scopes.getScopeView({ scopeId: c.req.param('id') });
       return c.json({
         attempt: result.attempt,
@@ -282,7 +271,7 @@ export function createApp(env: AppEnv): Hono {
   app.post('/api/scopes/:id/reconcile', async (c) => {
     try {
       const body = z.object({ orderId: z.string().min(1).optional() }).parse(await c.req.json().catch(() => ({})));
-      const result = await withPaypal(() => reconcileScope(deps, { scopeId: c.req.param('id'), orderId: body.orderId }));
+      const result = await reconcileScope(deps, { scopeId: c.req.param('id'), orderId: body.orderId });
       return c.json({
         attempt: result.attempt,
         providerStatus: result.providerStatus,
@@ -318,16 +307,19 @@ export function createApp(env: AppEnv): Hono {
         assessment: classified.assessment,
         requestedBy: change.requestedBy
       });
-      const newView = await env.scopes.getScopeView({ scopeId: view.scope.id });
+      // The version the client should look at next is the one the change produced,
+      // which is the original version only when nothing was priced.
+      const newView = await env.scopes.getScopeView({ scopeId: result.scope.id });
       return c.json(
         {
           assessment: { ...classified.assessment, deltaAmountMinor: result.deltaAmountMinor },
           deltaAmountMinor: result.deltaAmountMinor,
           deltaFormatted: formatMinor(result.deltaAmountMinor, view.scope.currency),
+          createdNewVersion: result.scope.id !== view.scope.id,
           supersededPaidVersion: !result.superseded && view.scope.status === 'paid',
           currentScope: newView.scope,
           history: newView.history,
-          warnings: classified.warnings,
+          warnings: [...classified.warnings, ...result.warnings],
           extraction: classified.meta
         },
         201
@@ -345,7 +337,7 @@ export function createApp(env: AppEnv): Hono {
       for (const [key, value] of Object.entries(c.req.header())) {
         headers[key.toLowerCase()] = value;
       }
-      const result = await withPaypal(() => handlePaypalWebhook(deps, { headers, rawBody }));
+      const result = await handlePaypalWebhook(deps, { headers, rawBody });
       // PayPal expects a 2xx acknowledgement; anything unverified is stored and refused.
       return c.json({ accepted: result.accepted, reason: result.reason, applied: result.applied }, result.accepted ? 200 : 400);
     } catch (error) {

@@ -48,7 +48,7 @@ The gold labels are authored expectations, not verified ground truth: they need 
 | `cscs.test.ts` | canonicalisation and hashing stability, missing-key reporting, no prices sent to the model, source-span validation, dropping invalid lines with warnings, fence-stripped JSON, retry-then-fail, HTTP failure without leaking the key, 404 mapping, timeout, change classification, unrecognised class downgraded, fixture counts, instruction-bearing brief classified as malicious data |
 | `store.test.ts` | one behavioural suite run against the memory and file adapters: insert-only scopes, status-lifecycle-only patches, ordering, duplicate request-key rejection, event idempotency and limit, newest brief by hash, copies not references, acceptance round-trip, plus an assertion that the D1 migration contains every table the adapter reads and writes |
 
-**There are no HTTP-level tests yet.** `tests/api/` does not exist, so the route layer (status codes, `errorResponse` mapping, `withPaypal` 503 behaviour) is currently verified only by typechecking and by manual runs. Adding that suite is the next testing gap.
+**HTTP-level tests exist now.** `tests/api/app.test.ts` covers the route layer (status codes, error mapping, sandbox-order idempotency, stale-scope capture refusal, webhook duplicate handling, and the credential-leak check on `/api/events`). Those tests use a fake PayPal transport: they prove the routing and the money-safety rules, and they do **not** prove real PayPal behaviour.
 
 ## Payment failure cases
 
