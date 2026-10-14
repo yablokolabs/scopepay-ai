@@ -28,33 +28,16 @@ Recorded evidence, including the exact commands and the defects they exposed:
 
 ## Architecture
 
-```
-Brief (untrusted text)
-   │  POST /api/briefs
-   ▼
-CSCS Apertus 1.5 70B ──── proposes catalog item ids + evidence spans + ambiguities
-   │                      (never a price, never an approval)
-   ▼
-Zod-validated proposal ──► merchant review (quantity-only edits, authoritative)
-   │
-   ▼
-Immutable ScopeVersion (sha256 hash over the canonical payload, integer cents)
-   │  buyer accepts THIS hash and THIS amount
-   ▼
-Deterministic server gate: status · merchant · hash · amount · currency   ← stale scope stops here
-   │
-   ▼
-PayPal Sandbox: create order (Paypal-Request-Id idempotency)
-   │  buyer approves on PayPal's own page
-   ▼
-Server capture ──► verified only when the provider reports COMPLETED
-   │
-   ▼
-Receipt with the real capture id · verified webhooks · explicit reconciliation
+![ScopePay payment flow](docs/payment-flow.png)
 
-Later changes ──► classification ──► server-priced delta ──► NEW version
-                  (a paid version is never rewritten and never silently re-charged)
-```
+ScopePay payment flow: an untrusted brief becomes catalog ids that Apertus
+proposes (never a price), a merchant-reviewed immutable version, and a buyer
+acceptance of that exact hash and amount. The deterministic server gate rejects
+a stale or tampered request, or lets it reach the PayPal sandbox. A capture counts
+only when PayPal reports `COMPLETED`. A later change is priced by the server and
+always becomes a new version. A paid version is never rewritten or re-charged.
+Sources: [`docs/payment-flow.svg`](docs/payment-flow.svg) and
+[`docs/payment-flow.html`](docs/payment-flow.html).
 
 Components: browser client (Vite + React), Hono server routes, Zod schemas as the
 only entry point for untrusted input, catalog-driven integer-cent pricing, three

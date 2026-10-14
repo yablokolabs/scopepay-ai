@@ -38,8 +38,9 @@ const failures = await page.evaluate(() => {
 
 	// A node is a rect large enough for a title and sublabel (diagram-design's own rule),
 	// excluding full-canvas backgrounds and zone containers.
-	const nodes = [...svg.querySelectorAll('rect')]
-		.filter((r) => !r.getAttribute('width')?.endsWith('%'))
+	// Diamonds are polygons; their tips lie on their bounding box, so the same edge test holds.
+	const nodes = [...svg.querySelectorAll('rect, polygon')]
+		.filter((r) => !r.closest("defs") && !r.getAttribute("width")?.endsWith("%"))
 		.map(box)
 		.filter((b) => b.width >= 60 && b.height >= 40 && b.width < 400);
 	const onEdge = (p) =>
