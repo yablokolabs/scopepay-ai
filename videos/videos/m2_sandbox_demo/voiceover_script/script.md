@@ -1,0 +1,19 @@
+# ScopePay — brief to sandbox capture
+
+## scopepay-title
+This is ScopePay. It turns a messy client brief into a reviewed, priced scope, and links that exact version to a payment on PayPal's sandbox. Sandbox — so nothing you see here moves real money.
+
+## scopepay-brief-to-scope
+It starts with the brief: five pages, copy that needs a tidy-up, and it has to work on phones. An Apertus model reads that and proposes which catalog items are in scope. It never proposes a price. The server re-prices from its own fixed catalog, and anything the model cannot justify becomes an ambiguity a human has to settle.
+
+## scopepay-merchant-review
+The merchant reviews it. Their edit is authoritative, and it produces a new version that can never be rewritten, sealed with a hash over the exact scope. That hash is what the buyer will approve — and that is what makes a stale scope unpayable.
+
+## scopepay-gate
+Before anything reaches PayPal, a deterministic gate re-checks four things on the server: the version hash, the amount, the currency, and the merchant. The model has no authority to move money here. If the hash is stale, or an amount was tampered with, the request stops at this gate.
+
+## scopepay-architecture
+Here is the whole trust boundary. The browser holds only publishable configuration. The server owns the catalog, the pricing and the gate, and it holds the credentials. PayPal alone decides whether money moved. The model proposes; it never pays.
+
+## scopepay-capture-and-receipt
+The buyer approves on PayPal's own page, and the server reads the order back and captures it. Order zero S L zero five seven three eight S seven two six two three zero four T; sixteen hundred and forty US dollars; capture id six Y S two eight six nine six two F seven two three two one zero Y. PayPal reports: completed. The receipt keeps what PayPal reported. What is still unproven is on the record too: a webhook delivery was verified against PayPal's own verifier, but no signed event has yet applied a state change, and timeouts and declines are untested.

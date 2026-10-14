@@ -1,0 +1,132 @@
+WEBVTT
+
+1
+00:00:00.000 --> 00:00:05.817
+This is ScopePay. It turns a messy client
+brief into a reviewed, priced scope, and
+
+2
+00:00:05.875 --> 00:00:12.167
+links that exact version to a payment on
+PayPal's sandbox. Sandbox — so nothing you
+
+3
+00:00:12.249 --> 00:00:14.013
+see here moves real money.
+
+4
+00:00:15.151 --> 00:00:20.352
+It starts with the brief: five pages, copy
+that needs a tidy-up, and it has to work
+
+5
+00:00:20.422 --> 00:00:27.701
+on phones. An Apertus model reads that and
+proposes which catalog items are in scope.
+
+6
+00:00:28.143 --> 00:00:33.994
+It never proposes a price. The server
+re-prices from its own fixed catalog, and
+
+7
+00:00:34.064 --> 00:00:39.439
+anything the model cannot justify becomes
+an ambiguity a human has to settle.
+
+8
+00:00:40.589 --> 00:00:45.407
+The merchant reviews it. Their edit is
+authoritative, and it produces a new
+
+9
+00:00:45.476 --> 00:00:50.678
+version that can never be rewritten,
+sealed with a hash over the exact scope.
+
+10
+00:00:51.189 --> 00:00:55.821
+That hash is what the buyer will approve —
+and that is what makes a stale scope
+
+11
+00:00:55.903 --> 00:00:56.994
+unpayable.
+
+12
+00:00:58.085 --> 00:01:02.938
+Before anything reaches PayPal, a
+deterministic gate re-checks four things
+
+13
+00:01:03.031 --> 00:01:07.908
+on the server: the version hash, the
+amount, the currency, and the merchant.
+
+14
+00:01:08.418 --> 00:01:13.585
+The model has no authority to move money
+here. If the hash is stale, or an amount
+
+15
+00:01:13.643 --> 00:01:16.871
+was tampered with, the request stops at
+this gate.
+
+16
+00:01:18.275 --> 00:01:22.791
+Here is the whole trust boundary. The
+browser holds only publishable
+
+17
+00:01:22.826 --> 00:01:27.888
+configuration. The server owns the
+catalog, the pricing and the gate, and it
+
+18
+00:01:27.946 --> 00:01:33.391
+holds the credentials. PayPal alone
+decides whether money moved. The model
+
+19
+00:01:33.449 --> 00:01:35.632
+proposes; it never pays.
+
+20
+00:01:36.689 --> 00:01:41.437
+The buyer approves on PayPal's own page,
+and the server reads the order back and
+
+21
+00:01:41.553 --> 00:01:47.498
+captures it. Order zero S L zero five
+seven three eight S seven two six two
+
+22
+00:01:47.579 --> 00:01:54.081
+three zero four T; sixteen hundred and
+forty US dollars; capture id six Y S two
+
+23
+00:01:54.197 --> 00:02:00.791
+eight six nine six two F seven two three
+two one zero Y. PayPal reports: completed.
+
+24
+00:02:01.116 --> 00:02:06.259
+The receipt keeps what PayPal reported.
+What is still unproven is on the record
+
+25
+00:02:06.317 --> 00:02:11.948
+too: a webhook delivery was verified
+against PayPal's own verifier, but no
+
+26
+00:02:12.041 --> 00:02:16.836
+signed event has yet applied a state
+change, and timeouts and declines are
+
+27
+00:02:16.917 --> 00:02:18.159
+untested.

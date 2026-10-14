@@ -23,6 +23,14 @@ current commit.
 - Verification: `npm run typecheck` clean, `npm test` 95 tests passing across
   domain, API-route and store suites, `npm run build` clean. Live smoke test with
   real Apertus recorded in `docs/proof/SMOKE_TEST_M0.md`.
+- M4 architecture diagram: `docs/architecture.html` built with diagram-design at
+  `11b08ea`, exported to `docs/architecture.svg` and `docs/architecture.png`
+  (1920x1120, `videos/scripts/export-diagram.mjs`), embedded in the README.
+  `self_check.py` OK, `verify-geometry.py` 0 findings, `check-diagram.mjs` OK.
+- M4 demo video: narrated draft `videos/videos/m2_sandbox_demo/draft.mp4`
+  (139.7s). Voice is Alice (premade British; the free API tier blocks library
+  voices and Voice Design). Segment timing and captions come from the narration's
+  word timestamps. The public YouTube upload remains unauthorized.
 
 ## Defects found and fixed (all had a reproducing test before the fix)
 
@@ -46,8 +54,6 @@ current commit.
 - **Sites/Vinext tooling is not installed on this host.** The build uses Vite +
   React with a Hono server, and D1 support is written but only unit-checked. This
   deviation from `PROJECT_BUILD.md` is unresolved.
-- Architecture diagram (SVG + PNG embedded in README) not produced.
-- Videowright demo not produced; ElevenLabs voice not selected or auditioned.
 - Extraction evaluation over the 20 frozen briefs not measured.
 - `LICENSE` currently MIT, chosen to satisfy the public-licensed-source
   requirement — the owner has not confirmed the license choice.
@@ -64,7 +70,8 @@ capture → receipt path and record it in `docs/proof/`.
 - [ ] M1 scope/pricing/review — implemented and live-tested; evaluation pending
 - [ ] M2 real sandbox checkout/reconciliation — blocked on credentials
 - [ ] M3 change flow/evaluation/adversarial tests — change flow done, evaluation pending
-- [ ] M4 diagrams/video/submission materials
+- [ ] M4 diagrams/video/submission materials — diagram done and embedded;
+      narrated demo draft rendered; no public upload
 
 Checkpoint format and rules: see `docs/SESSION_TOOLING.md`. No secrets, no buyer
 passwords, no footer.

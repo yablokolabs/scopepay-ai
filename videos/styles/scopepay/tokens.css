@@ -1,0 +1,56 @@
+/* ScopePay — design tokens
+ * Midnight-plum ink on ivory paper. One teal accent. Content-first editorial feel.
+ *
+ * Retuned from the bundled `editorial-mono` style: same structure, project palette.
+ * The values match the architecture diagram tokens, so the video and README agree.
+ * The "red accent" wording in the copied `sample/*.ts` voiceover copy is stale;
+ * the accent here is teal.
+ */
+
+/* Bundled faces: the renderer has no network fonts, so unimported families fall back. */
+@import "@fontsource/instrument-serif/400.css";
+@import "@fontsource/instrument-serif/400-italic.css";
+@import "@fontsource/geist/400.css";
+@import "@fontsource/geist/500.css";
+@import "@fontsource/jetbrains-mono/400.css";
+
+:root {
+	/* Core palette */
+	--color-bg: #faf6ee; /* ivory paper */
+	--color-fg: #2e2246; /* midnight-plum ink */
+	--color-accent: #0f7b72; /* teal accent */
+
+	/* Extended palette */
+	--color-muted: #7b756b; /* warm gray for secondary type */
+	--color-border: #d9d3c7; /* hairline rule, very subtle */
+	--color-surface: #ebe7dd; /* slightly darker paper for cards */
+
+	/* Typography */
+	--font-display: "Instrument Serif", "Times New Roman", serif;
+	--font-body: "Geist", "Helvetica Neue", system-ui, sans-serif;
+	--font-mono: "JetBrains Mono", ui-monospace, monospace;
+
+	/* Spacing (px on 1920×1080 canvas) */
+	--space-sm: 16px;
+	--space-md: 32px;
+	--space-lg: 64px;
+	--space-xl: 128px;
+
+	/* Motion */
+	--duration-fast: 220ms;
+	--duration-normal: 480ms;
+	--duration-slow: 900ms;
+
+	/* Template-specific extensions */
+	--radius-sm: 2px; /* almost no rounding — print sensibility */
+	--radius-md: 4px;
+	--stagger: 80ms; /* base stagger increment */
+	--ease-out: cubic-bezier(0.16, 1, 0.3, 1); /* easeOutQuart */
+	--ease-in: cubic-bezier(0.7, 0, 0.84, 0);
+	--rule-weight: 1px; /* hairline rule */
+	--scene-hold: 4s; /* default per-scene duration */
+
+	/* Safe area for 1920×1080 */
+	--safe-x: 128px;
+	--safe-y: 96px;
+}
