@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ScopePay payment architecture</title>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    /* ScopePay brand profile — ivory paper, midnight-plum ink, teal accent.
+       Taken from docs/MEDIA_WORKFLOWS.md ("Proposed ScopePay diagram palette"),
+       applied here instead of the Diagram Design shipped defaults. */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --color-paper:       #faf6ee;  /* ivory */
+      --color-paper-2:     #f1ebdf;
+      --color-ink:         #2e2246;  /* midnight plum */
+      --color-muted:       #5a5170;
+      --color-soft:        #6f6685;
+      --color-accent:      #0f7b72;  /* teal */
+      --color-link:        #4c6ba8;
+      --font-sans:         'Geist', system-ui, sans-serif;
+      --font-serif:        'Instrument Serif', serif;
+      --font-mono:         'Geist Mono', ui-monospace, monospace;
+    }
+
+    body {
+      font-family: var(--font-sans);
+      background: var(--color-paper);
+      color: var(--color-ink);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 3rem 2rem;
+    }
+
+    .frame { max-width: 1200px; width: 100%; }
+
+    .eyebrow {
+      font-family: var(--font-mono);
+      font-size: 0.66rem;
+      font-weight: 500;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--color-muted);
+      margin-bottom: 0.5rem;
+    }
+
+    h1 {
+      font-family: var(--font-serif);
+      font-size: clamp(1.5rem, 2.4vw + 0.75rem, 2rem);
+      font-weight: 400;
+      letter-spacing: -0.02em;
+      line-height: 1.15;
+      color: var(--color-ink);
+      margin-bottom: 1.5rem;
+    }
+
+    /* min-width matches the viewBox width so a narrow screen scrolls this
+       wrapper only, instead of the whole page or a clipped diagram. */
+    .diagram { overflow-x: auto; }
+    svg { width: 100%; min-width: 960px; display: block; }
+  </style>
+</head>
+<body>
+  <div class="frame">
+    <p class="eyebrow">Architecture · ScopePay</p>
+    <h1>ScopePay payment architecture</h1>
+
+    <div class="diagram">
+    <svg viewBox="0 0 960 560" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="architecture-title architecture-desc">
+      <title id="architecture-title">ScopePay payment architecture</title>
+      <desc id="architecture-desc">A buyer browser talks to the ScopePay server, which asks CSCS Apertus to propose catalog items, recomputes the price in a deterministic gate, creates and captures a PayPal sandbox order, and stores immutable scope versions and the capture receipt.</desc>
+        <defs>
+          <pattern id="dots" width="22" height="22" patternUnits="userSpaceOnUse">
+            <circle cx="1" cy="1" r="0.9" fill="rgba(46,34,70,0.10)"/>
+          </pattern>
+          <marker id="arrow" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#5a5170"/></marker>
+          <marker id="arrow-accent" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#0f7b72"/></marker>
+          <marker id="arrow-link" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#4c6ba8"/></marker>
+        </defs>
+
+        <rect width="100%" height="100%" fill="#faf6ee"/>
+        <rect width="100%" height="100%" fill="url(#dots)" opacity="0.55"/>
+
+        <!-- Zone: the server process and its trust boundary (drawn first) -->
+        <rect x="216" y="152" width="408" height="268" rx="8"
+              fill="rgba(46,34,70,0.02)" stroke="rgba(46,34,70,0.10)" stroke-width="0.8"/>
+        <rect x="232" y="400" width="210" height="12" rx="2" fill="#faf6ee"/>
+        <text x="337" y="409" fill="#6f6685" font-size="7" font-family="'Geist Mono', monospace"
+              text-anchor="middle" letter-spacing="0.14em">SCOPEPAY SERVER · TRUST BOUNDARY</text>
+
+        <!-- Arrows first, so connections sit behind the node fills -->
+        <!-- Buyer submits the brief and accepts an exact version hash -->
+        <line x1="176" y1="220" x2="240" y2="220" stroke="#4c6ba8" stroke-width="1.2" marker-end="url(#arrow-link)"/>
+        <!-- Server asks the model to propose catalog items (never a price) -->
+        <line x1="296" y1="184" x2="296" y2="128" stroke="#4c6ba8" stroke-width="1.2" marker-end="url(#arrow-link)"/>
+        <!-- Model returns ids only; the server validates them -->
+        <line x1="368" y1="128" x2="368" y2="184" stroke="#5a5170" stroke-width="1" stroke-dasharray="4,3" marker-end="url(#arrow)"/>
+        <!-- The gate is the only path from a scope version to a provider call -->
+        <line x1="400" y1="220" x2="448" y2="220" stroke="#2e2246" stroke-width="1.2" marker-end="url(#arrow)"/>
+        <!-- Only a passing hash/amount/currency/merchant check reaches PayPal -->
+        <line x1="600" y1="220" x2="688" y2="220" stroke="#0f7b72" stroke-width="1.4" marker-end="url(#arrow-accent)"/>
+        <!-- PayPal returns the buyer's browser with its own approval proof -->
+        <path d="M 900,304 V 462 Q 900,470 892,470 H 108 Q 100,470 100,462 V 256"
+              fill="none" stroke="#5a5170" stroke-width="1" stroke-dasharray="4,3" marker-end="url(#arrow)"/>
+        <!-- PayPal posts a signed webhook; nothing is trusted before verification -->
+        <path d="M 720,304 V 350 Q 720,358 712,358 H 608"
+              fill="none" stroke="#5a5170" stroke-width="1" stroke-dasharray="4,3" marker-end="url(#arrow)"/>
+        <!-- Immutable version written before any order exists -->
+        <line x1="320" y1="256" x2="320" y2="328" stroke="#5a5170" stroke-width="1.2" marker-end="url(#arrow)"/>
+
+        <!-- Arrow labels, each on an opaque mask with a visible gap from its stroke -->
+        <rect x="178" y="202" width="60" height="12" rx="2" fill="#faf6ee"/>
+        <text x="208" y="211" fill="#4c6ba8" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">BRIEF·ACCEPT</text>
+
+        <rect x="302" y="148" width="44" height="12" rx="2" fill="#faf6ee"/>
+        <text x="324" y="157" fill="#4c6ba8" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">PROPOSE</text>
+
+        <rect x="374" y="148" width="52" height="12" rx="2" fill="#faf6ee"/>
+        <text x="400" y="157" fill="#5a5170" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">IDS ONLY</text>
+
+        <rect x="404" y="202" width="40" height="12" rx="2" fill="#faf6ee"/>
+        <text x="424" y="211" fill="#2e2246" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">VERIFY</text>
+
+        <rect x="618" y="202" width="52" height="12" rx="2" fill="#faf6ee"/>
+        <text x="644" y="211" fill="#0f7b72" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">CAPTURE</text>
+
+        <rect x="400" y="452" width="76" height="12" rx="2" fill="#faf6ee"/>
+        <text x="438" y="461" fill="#5a5170" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">RETURN·PAYERID</text>
+
+        <rect x="644" y="340" width="56" height="12" rx="2" fill="#faf6ee"/>
+        <text x="672" y="349" fill="#5a5170" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">WEBHOOK</text>
+
+        <rect x="326" y="286" width="76" height="12" rx="2" fill="#faf6ee"/>
+        <text x="364" y="295" fill="#5a5170" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">VERSION·WRITE</text>
+
+        <!-- Node: CSCS Apertus (external model) -->
+        <rect x="232" y="64" width="200" height="64" rx="6" fill="#faf6ee"/>
+        <rect x="232" y="64" width="200" height="64" rx="6" fill="rgba(46,34,70,0.03)" stroke="rgba(46,34,70,0.30)" stroke-width="1"/>
+        <rect x="240" y="72" width="34" height="12" rx="2" fill="transparent" stroke="rgba(46,34,70,0.22)" stroke-width="0.8"/>
+        <text x="257" y="81" fill="#6f6685" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">MODEL</text>
+        <text x="332" y="100" fill="#2e2246" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">CSCS Apertus 1.5 70B</text>
+        <text x="332" y="116" fill="#5a5170" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">proposes ids · never a price</text>
+
+        <!-- Node: buyer browser (user input) -->
+        <rect x="24" y="184" width="152" height="72" rx="6" fill="#faf6ee"/>
+        <rect x="24" y="184" width="152" height="72" rx="6" fill="rgba(90,81,112,0.10)" stroke="#6f6685" stroke-width="1"/>
+        <rect x="32" y="192" width="22" height="12" rx="2" fill="transparent" stroke="rgba(111,102,133,0.40)" stroke-width="0.8"/>
+        <text x="43" y="201" fill="#6f6685" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">UI</text>
+        <text x="100" y="224" fill="#2e2246" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Buyer browser</text>
+        <text x="100" y="240" fill="#5a5170" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">brief · approve · receipt</text>
+
+        <!-- Node: Hono routes (backend) -->
+        <rect x="240" y="184" width="160" height="72" rx="6" fill="#faf6ee"/>
+        <rect x="240" y="184" width="160" height="72" rx="6" fill="#ffffff" stroke="#2e2246" stroke-width="1"/>
+        <rect x="248" y="192" width="26" height="12" rx="2" fill="transparent" stroke="rgba(46,34,70,0.40)" stroke-width="0.8"/>
+        <text x="261" y="201" fill="#2e2246" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">API</text>
+        <text x="320" y="224" fill="#2e2246" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Hono routes</text>
+        <text x="320" y="240" fill="#5a5170" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">server/app.ts</text>
+
+        <!-- Node: deterministic gate (focal) -->
+        <rect x="448" y="184" width="152" height="72" rx="6" fill="#faf6ee"/>
+        <rect x="448" y="184" width="152" height="72" rx="6" fill="rgba(15,123,114,0.08)" stroke="#0f7b72" stroke-width="1"/>
+        <rect x="456" y="192" width="34" height="12" rx="2" fill="transparent" stroke="rgba(15,123,114,0.50)" stroke-width="0.8"/>
+        <text x="473" y="201" fill="#0f7b72" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">GATE</text>
+        <text x="524" y="224" fill="#2e2246" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Deterministic gate</text>
+        <text x="524" y="240" fill="#5a5170" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">hash · amount · ccy</text>
+
+        <!-- Node: immutable scope versions (durable state) -->
+        <rect x="240" y="328" width="368" height="64" rx="6" fill="#faf6ee"/>
+        <rect x="240" y="328" width="368" height="64" rx="6" fill="rgba(46,34,70,0.05)" stroke="#5a5170" stroke-width="1"/>
+        <rect x="248" y="336" width="38" height="12" rx="2" fill="transparent" stroke="rgba(90,81,112,0.50)" stroke-width="0.8"/>
+        <text x="267" y="345" fill="#5a5170" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">STORE</text>
+        <text x="424" y="356" fill="#2e2246" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Immutable scope versions</text>
+        <text x="424" y="374" fill="#5a5170" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">hash 7199c4f7… · attempts · events</text>
+
+        <!-- Node: PayPal sandbox (external provider) -->
+        <rect x="688" y="208" width="232" height="96" rx="6" fill="#faf6ee"/>
+        <rect x="688" y="208" width="232" height="96" rx="6" fill="rgba(46,34,70,0.03)" stroke="rgba(46,34,70,0.30)" stroke-width="1"/>
+        <rect x="696" y="216" width="52" height="12" rx="2" fill="transparent" stroke="rgba(46,34,70,0.22)" stroke-width="0.8"/>
+        <text x="722" y="225" fill="#6f6685" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">SANDBOX</text>
+        <text x="804" y="256" fill="#2e2246" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">PayPal Sandbox</text>
+        <text x="804" y="272" fill="#5a5170" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">orders · approval · capture</text>
+        <text x="804" y="288" fill="#5a5170" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">test only — no live funds</text>
+
+        <!-- Legend: a horizontal bottom strip, covering exactly the types used -->
+        <line x1="40" y1="506" x2="920" y2="506" stroke="rgba(46,34,70,0.10)" stroke-width="0.8"/>
+        <text x="40" y="526" fill="#5a5170" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.18em">LEGEND</text>
+
+        <rect x="130" y="516" width="14" height="10" rx="2" fill="rgba(15,123,114,0.08)" stroke="#0f7b72" stroke-width="1"/>
+        <text x="150" y="525" fill="#5a5170" font-size="8.5" font-family="'Geist', sans-serif">Focal gate</text>
+
+        <rect x="230" y="516" width="14" height="10" rx="2" fill="#ffffff" stroke="#2e2246" stroke-width="1"/>
+        <text x="250" y="525" fill="#5a5170" font-size="8.5" font-family="'Geist', sans-serif">Server route</text>
+
+        <rect x="356" y="516" width="14" height="10" rx="2" fill="rgba(46,34,70,0.05)" stroke="#5a5170" stroke-width="1"/>
+        <text x="376" y="525" fill="#5a5170" font-size="8.5" font-family="'Geist', sans-serif">Durable state</text>
+
+        <rect x="486" y="516" width="14" height="10" rx="2" fill="rgba(46,34,70,0.03)" stroke="rgba(46,34,70,0.30)" stroke-width="1"/>
+        <text x="506" y="525" fill="#5a5170" font-size="8.5" font-family="'Geist', sans-serif">External service</text>
+
+        <rect x="630" y="516" width="14" height="10" rx="2" fill="rgba(90,81,112,0.10)" stroke="#6f6685" stroke-width="1"/>
+        <text x="650" y="525" fill="#5a5170" font-size="8.5" font-family="'Geist', sans-serif">Browser</text>
+
+        <line x1="130" y1="550" x2="158" y2="550" stroke="#4c6ba8" stroke-width="1.2" marker-end="url(#arrow-link)"/>
+        <text x="166" y="553" fill="#5a5170" font-size="8.5" font-family="'Geist', sans-serif">HTTP to model / PayPal</text>
+
+        <line x1="360" y1="550" x2="388" y2="550" stroke="#0f7b72" stroke-width="1.4" marker-end="url(#arrow-accent)"/>
+        <text x="396" y="553" fill="#5a5170" font-size="8.5" font-family="'Geist', sans-serif">Gate-authorized</text>
+
+        <line x1="560" y1="550" x2="588" y2="550" stroke="#5a5170" stroke-width="1" stroke-dasharray="4,3" marker-end="url(#arrow)"/>
+        <text x="596" y="553" fill="#5a5170" font-size="8.5" font-family="'Geist', sans-serif">Return / webhook</text>
+      </svg>
+    </div>
+  </div>
+</body>
+</html>

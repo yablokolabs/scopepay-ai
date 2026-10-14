@@ -1,0 +1,1729 @@
+{
+  "words": [
+    {
+      "word": "This",
+      "start": 0.0,
+      "end": 0.267
+    },
+    {
+      "word": "is",
+      "start": 0.348,
+      "end": 0.511
+    },
+    {
+      "word": "ScopePay.",
+      "start": 0.592,
+      "end": 1.533
+    },
+    {
+      "word": "It",
+      "start": 1.776,
+      "end": 1.95
+    },
+    {
+      "word": "turns",
+      "start": 1.985,
+      "end": 2.264
+    },
+    {
+      "word": "a",
+      "start": 2.322,
+      "end": 2.345
+    },
+    {
+      "word": "messy",
+      "start": 2.461,
+      "end": 2.786
+    },
+    {
+      "word": "client",
+      "start": 2.844,
+      "end": 3.17
+    },
+    {
+      "word": "brief",
+      "start": 3.204,
+      "end": 3.46
+    },
+    {
+      "word": "into",
+      "start": 3.529,
+      "end": 3.692
+    },
+    {
+      "word": "a",
+      "start": 3.773,
+      "end": 3.796
+    },
+    {
+      "word": "reviewed,",
+      "start": 3.878,
+      "end": 4.412
+    },
+    {
+      "word": "priced",
+      "start": 4.528,
+      "end": 4.934
+    },
+    {
+      "word": "scope,",
+      "start": 4.992,
+      "end": 5.48
+    },
+    {
+      "word": "and",
+      "start": 5.654,
+      "end": 5.817
+    },
+    {
+      "word": "links",
+      "start": 5.875,
+      "end": 6.13
+    },
+    {
+      "word": "that",
+      "start": 6.177,
+      "end": 6.351
+    },
+    {
+      "word": "exact",
+      "start": 6.409,
+      "end": 6.85
+    },
+    {
+      "word": "version",
+      "start": 6.92,
+      "end": 7.303
+    },
+    {
+      "word": "to",
+      "start": 7.384,
+      "end": 7.5
+    },
+    {
+      "word": "a",
+      "start": 7.581,
+      "end": 7.605
+    },
+    {
+      "word": "payment",
+      "start": 7.674,
+      "end": 8.104
+    },
+    {
+      "word": "on",
+      "start": 8.185,
+      "end": 8.359
+    },
+    {
+      "word": "PayPal's",
+      "start": 8.475,
+      "end": 9.091
+    },
+    {
+      "word": "sandbox.",
+      "start": 9.207,
+      "end": 10.112
+    },
+    {
+      "word": "Sandbox",
+      "start": 10.623,
+      "end": 11.227
+    },
+    {
+      "word": "—",
+      "start": 11.343,
+      "end": 11.436
+    },
+    {
+      "word": "so",
+      "start": 11.494,
+      "end": 11.633
+    },
+    {
+      "word": "nothing",
+      "start": 11.726,
+      "end": 12.016
+    },
+    {
+      "word": "you",
+      "start": 12.074,
+      "end": 12.167
+    },
+    {
+      "word": "see",
+      "start": 12.249,
+      "end": 12.434
+    },
+    {
+      "word": "here",
+      "start": 12.504,
+      "end": 12.713
+    },
+    {
+      "word": "moves",
+      "start": 12.783,
+      "end": 13.108
+    },
+    {
+      "word": "real",
+      "start": 13.259,
+      "end": 13.502
+    },
+    {
+      "word": "money.",
+      "start": 13.572,
+      "end": 14.013
+    },
+    {
+      "word": "<break",
+      "start": 15.151,
+      "end": 15.151
+    },
+    {
+      "word": "time=\"1.0s\"",
+      "start": 15.151,
+      "end": 15.151
+    },
+    {
+      "word": "/>",
+      "start": 15.151,
+      "end": 15.151
+    },
+    {
+      "word": "It",
+      "start": 15.151,
+      "end": 15.325
+    },
+    {
+      "word": "starts",
+      "start": 15.383,
+      "end": 15.732
+    },
+    {
+      "word": "with",
+      "start": 15.778,
+      "end": 15.917
+    },
+    {
+      "word": "the",
+      "start": 15.94,
+      "end": 16.01
+    },
+    {
+      "word": "brief:",
+      "start": 16.057,
+      "end": 16.509
+    },
+    {
+      "word": "five",
+      "start": 16.66,
+      "end": 16.997
+    },
+    {
+      "word": "pages,",
+      "start": 17.043,
+      "end": 17.659
+    },
+    {
+      "word": "copy",
+      "start": 17.775,
+      "end": 18.1
+    },
+    {
+      "word": "that",
+      "start": 18.146,
+      "end": 18.262
+    },
+    {
+      "word": "needs",
+      "start": 18.321,
+      "end": 18.588
+    },
+    {
+      "word": "a",
+      "start": 18.634,
+      "end": 18.669
+    },
+    {
+      "word": "tidy-up,",
+      "start": 18.738,
+      "end": 19.458
+    },
+    {
+      "word": "and",
+      "start": 19.505,
+      "end": 19.656
+    },
+    {
+      "word": "it",
+      "start": 19.714,
+      "end": 19.783
+    },
+    {
+      "word": "has",
+      "start": 19.83,
+      "end": 19.969
+    },
+    {
+      "word": "to",
+      "start": 20.027,
+      "end": 20.085
+    },
+    {
+      "word": "work",
+      "start": 20.155,
+      "end": 20.352
+    },
+    {
+      "word": "on",
+      "start": 20.422,
+      "end": 20.515
+    },
+    {
+      "word": "phones.",
+      "start": 20.596,
+      "end": 21.316
+    },
+    {
+      "word": "An",
+      "start": 21.827,
+      "end": 21.978
+    },
+    {
+      "word": "Apertus",
+      "start": 22.071,
+      "end": 22.709
+    },
+    {
+      "word": "model",
+      "start": 22.779,
+      "end": 23.046
+    },
+    {
+      "word": "reads",
+      "start": 23.139,
+      "end": 23.452
+    },
+    {
+      "word": "that",
+      "start": 23.522,
+      "end": 23.812
+    },
+    {
+      "word": "and",
+      "start": 24.091,
+      "end": 24.311
+    },
+    {
+      "word": "proposes",
+      "start": 24.381,
+      "end": 24.938
+    },
+    {
+      "word": "which",
+      "start": 25.008,
+      "end": 25.263
+    },
+    {
+      "word": "catalog",
+      "start": 25.333,
+      "end": 25.797
+    },
+    {
+      "word": "items",
+      "start": 25.913,
+      "end": 26.424
+    },
+    {
+      "word": "are",
+      "start": 26.494,
+      "end": 26.715
+    },
+    {
+      "word": "in",
+      "start": 26.773,
+      "end": 26.9
+    },
+    {
+      "word": "scope.",
+      "start": 27.028,
+      "end": 27.701
+    },
+    {
+      "word": "It",
+      "start": 28.143,
+      "end": 28.294
+    },
+    {
+      "word": "never",
+      "start": 28.363,
+      "end": 28.607
+    },
+    {
+      "word": "proposes",
+      "start": 28.665,
+      "end": 29.164
+    },
+    {
+      "word": "a",
+      "start": 29.211,
+      "end": 29.246
+    },
+    {
+      "word": "price.",
+      "start": 29.338,
+      "end": 29.989
+    },
+    {
+      "word": "The",
+      "start": 30.372,
+      "end": 30.488
+    },
+    {
+      "word": "server",
+      "start": 30.546,
+      "end": 30.894
+    },
+    {
+      "word": "re-prices",
+      "start": 30.975,
+      "end": 31.637
+    },
+    {
+      "word": "from",
+      "start": 31.695,
+      "end": 31.835
+    },
+    {
+      "word": "its",
+      "start": 31.893,
+      "end": 32.02
+    },
+    {
+      "word": "own",
+      "start": 32.09,
+      "end": 32.322
+    },
+    {
+      "word": "fixed",
+      "start": 32.415,
+      "end": 32.775
+    },
+    {
+      "word": "catalog,",
+      "start": 32.833,
+      "end": 33.483
+    },
+    {
+      "word": "and",
+      "start": 33.808,
+      "end": 33.994
+    },
+    {
+      "word": "anything",
+      "start": 34.064,
+      "end": 34.4
+    },
+    {
+      "word": "the",
+      "start": 34.447,
+      "end": 34.517
+    },
+    {
+      "word": "model",
+      "start": 34.551,
+      "end": 34.784
+    },
+    {
+      "word": "cannot",
+      "start": 34.853,
+      "end": 35.155
+    },
+    {
+      "word": "justify",
+      "start": 35.236,
+      "end": 35.875
+    },
+    {
+      "word": "becomes",
+      "start": 35.991,
+      "end": 36.432
+    },
+    {
+      "word": "an",
+      "start": 36.502,
+      "end": 36.63
+    },
+    {
+      "word": "ambiguity",
+      "start": 36.746,
+      "end": 37.721
+    },
+    {
+      "word": "a",
+      "start": 37.802,
+      "end": 37.86
+    },
+    {
+      "word": "human",
+      "start": 37.976,
+      "end": 38.325
+    },
+    {
+      "word": "has",
+      "start": 38.394,
+      "end": 38.557
+    },
+    {
+      "word": "to",
+      "start": 38.626,
+      "end": 38.708
+    },
+    {
+      "word": "settle.",
+      "start": 38.801,
+      "end": 39.439
+    },
+    {
+      "word": "<break",
+      "start": 40.589,
+      "end": 40.589
+    },
+    {
+      "word": "time=\"1.0s\"",
+      "start": 40.589,
+      "end": 40.589
+    },
+    {
+      "word": "/>",
+      "start": 40.589,
+      "end": 40.589
+    },
+    {
+      "word": "The",
+      "start": 40.589,
+      "end": 40.705
+    },
+    {
+      "word": "merchant",
+      "start": 40.763,
+      "end": 41.146
+    },
+    {
+      "word": "reviews",
+      "start": 41.204,
+      "end": 41.633
+    },
+    {
+      "word": "it.",
+      "start": 41.715,
+      "end": 42.098
+    },
+    {
+      "word": "Their",
+      "start": 42.376,
+      "end": 42.585
+    },
+    {
+      "word": "edit",
+      "start": 42.655,
+      "end": 42.957
+    },
+    {
+      "word": "is",
+      "start": 43.027,
+      "end": 43.131
+    },
+    {
+      "word": "authoritative,",
+      "start": 43.189,
+      "end": 44.118
+    },
+    {
+      "word": "and",
+      "start": 44.292,
+      "end": 44.431
+    },
+    {
+      "word": "it",
+      "start": 44.501,
+      "end": 44.548
+    },
+    {
+      "word": "produces",
+      "start": 44.594,
+      "end": 45.058
+    },
+    {
+      "word": "a",
+      "start": 45.116,
+      "end": 45.14
+    },
+    {
+      "word": "new",
+      "start": 45.256,
+      "end": 45.407
+    },
+    {
+      "word": "version",
+      "start": 45.476,
+      "end": 45.836
+    },
+    {
+      "word": "that",
+      "start": 45.883,
+      "end": 46.022
+    },
+    {
+      "word": "can",
+      "start": 46.092,
+      "end": 46.254
+    },
+    {
+      "word": "never",
+      "start": 46.335,
+      "end": 46.579
+    },
+    {
+      "word": "be",
+      "start": 46.649,
+      "end": 46.788
+    },
+    {
+      "word": "rewritten,",
+      "start": 46.881,
+      "end": 47.705
+    },
+    {
+      "word": "sealed",
+      "start": 48.031,
+      "end": 48.414
+    },
+    {
+      "word": "with",
+      "start": 48.483,
+      "end": 48.634
+    },
+    {
+      "word": "a",
+      "start": 48.681,
+      "end": 48.704
+    },
+    {
+      "word": "hash",
+      "start": 48.797,
+      "end": 49.099
+    },
+    {
+      "word": "over",
+      "start": 49.157,
+      "end": 49.354
+    },
+    {
+      "word": "the",
+      "start": 49.412,
+      "end": 49.493
+    },
+    {
+      "word": "exact",
+      "start": 49.563,
+      "end": 50.016
+    },
+    {
+      "word": "scope.",
+      "start": 50.086,
+      "end": 50.678
+    },
+    {
+      "word": "That",
+      "start": 51.189,
+      "end": 51.421
+    },
+    {
+      "word": "hash",
+      "start": 51.491,
+      "end": 51.758
+    },
+    {
+      "word": "is",
+      "start": 51.816,
+      "end": 51.885
+    },
+    {
+      "word": "what",
+      "start": 51.944,
+      "end": 52.083
+    },
+    {
+      "word": "the",
+      "start": 52.129,
+      "end": 52.199
+    },
+    {
+      "word": "buyer",
+      "start": 52.28,
+      "end": 52.594
+    },
+    {
+      "word": "will",
+      "start": 52.629,
+      "end": 52.768
+    },
+    {
+      "word": "approve",
+      "start": 52.803,
+      "end": 53.395
+    },
+    {
+      "word": "—",
+      "start": 53.418,
+      "end": 53.464
+    },
+    {
+      "word": "and",
+      "start": 53.743,
+      "end": 53.882
+    },
+    {
+      "word": "that",
+      "start": 53.94,
+      "end": 54.091
+    },
+    {
+      "word": "is",
+      "start": 54.138,
+      "end": 54.219
+    },
+    {
+      "word": "what",
+      "start": 54.266,
+      "end": 54.405
+    },
+    {
+      "word": "makes",
+      "start": 54.451,
+      "end": 54.718
+    },
+    {
+      "word": "a",
+      "start": 54.788,
+      "end": 54.846
+    },
+    {
+      "word": "stale",
+      "start": 54.939,
+      "end": 55.345
+    },
+    {
+      "word": "scope",
+      "start": 55.403,
+      "end": 55.821
+    },
+    {
+      "word": "unpayable.",
+      "start": 55.903,
+      "end": 56.994
+    },
+    {
+      "word": "<break",
+      "start": 58.085,
+      "end": 58.085
+    },
+    {
+      "word": "time=\"1.0s\"",
+      "start": 58.085,
+      "end": 58.085
+    },
+    {
+      "word": "/>",
+      "start": 58.085,
+      "end": 58.085
+    },
+    {
+      "word": "Before",
+      "start": 58.085,
+      "end": 58.434
+    },
+    {
+      "word": "anything",
+      "start": 58.492,
+      "end": 58.956
+    },
+    {
+      "word": "reaches",
+      "start": 59.037,
+      "end": 59.42
+    },
+    {
+      "word": "PayPal,",
+      "start": 59.49,
+      "end": 60.175
+    },
+    {
+      "word": "a",
+      "start": 60.384,
+      "end": 60.454
+    },
+    {
+      "word": "deterministic",
+      "start": 60.523,
+      "end": 61.255
+    },
+    {
+      "word": "gate",
+      "start": 61.324,
+      "end": 61.615
+    },
+    {
+      "word": "re-checks",
+      "start": 61.673,
+      "end": 62.172
+    },
+    {
+      "word": "four",
+      "start": 62.242,
+      "end": 62.509
+    },
+    {
+      "word": "things",
+      "start": 62.567,
+      "end": 62.938
+    },
+    {
+      "word": "on",
+      "start": 63.031,
+      "end": 63.205
+    },
+    {
+      "word": "the",
+      "start": 63.263,
+      "end": 63.333
+    },
+    {
+      "word": "server:",
+      "start": 63.403,
+      "end": 64.03
+    },
+    {
+      "word": "the",
+      "start": 64.308,
+      "end": 64.401
+    },
+    {
+      "word": "version",
+      "start": 64.459,
+      "end": 64.784
+    },
+    {
+      "word": "hash,",
+      "start": 64.865,
+      "end": 65.272
+    },
+    {
+      "word": "the",
+      "start": 65.353,
+      "end": 65.469
+    },
+    {
+      "word": "amount,",
+      "start": 65.516,
+      "end": 65.945
+    },
+    {
+      "word": "the",
+      "start": 66.003,
+      "end": 66.108
+    },
+    {
+      "word": "currency,",
+      "start": 66.166,
+      "end": 66.793
+    },
+    {
+      "word": "and",
+      "start": 66.828,
+      "end": 67.014
+    },
+    {
+      "word": "the",
+      "start": 67.072,
+      "end": 67.141
+    },
+    {
+      "word": "merchant.",
+      "start": 67.199,
+      "end": 67.908
+    },
+    {
+      "word": "The",
+      "start": 68.418,
+      "end": 68.535
+    },
+    {
+      "word": "model",
+      "start": 68.581,
+      "end": 68.86
+    },
+    {
+      "word": "has",
+      "start": 68.929,
+      "end": 69.103
+    },
+    {
+      "word": "no",
+      "start": 69.22,
+      "end": 69.382
+    },
+    {
+      "word": "authority",
+      "start": 69.463,
+      "end": 70.032
+    },
+    {
+      "word": "to",
+      "start": 70.102,
+      "end": 70.172
+    },
+    {
+      "word": "move",
+      "start": 70.253,
+      "end": 70.462
+    },
+    {
+      "word": "money",
+      "start": 70.508,
+      "end": 70.729
+    },
+    {
+      "word": "here.",
+      "start": 70.787,
+      "end": 71.135
+    },
+    {
+      "word": "If",
+      "start": 71.46,
+      "end": 71.646
+    },
+    {
+      "word": "the",
+      "start": 71.704,
+      "end": 71.797
+    },
+    {
+      "word": "hash",
+      "start": 71.867,
+      "end": 72.122
+    },
+    {
+      "word": "is",
+      "start": 72.192,
+      "end": 72.308
+    },
+    {
+      "word": "stale,",
+      "start": 72.354,
+      "end": 72.912
+    },
+    {
+      "word": "or",
+      "start": 72.958,
+      "end": 73.12
+    },
+    {
+      "word": "an",
+      "start": 73.167,
+      "end": 73.237
+    },
+    {
+      "word": "amount",
+      "start": 73.271,
+      "end": 73.585
+    },
+    {
+      "word": "was",
+      "start": 73.643,
+      "end": 73.771
+    },
+    {
+      "word": "tampered",
+      "start": 73.84,
+      "end": 74.223
+    },
+    {
+      "word": "with,",
+      "start": 74.258,
+      "end": 74.56
+    },
+    {
+      "word": "the",
+      "start": 74.734,
+      "end": 74.827
+    },
+    {
+      "word": "request",
+      "start": 74.897,
+      "end": 75.361
+    },
+    {
+      "word": "stops",
+      "start": 75.408,
+      "end": 75.814
+    },
+    {
+      "word": "at",
+      "start": 75.884,
+      "end": 76.046
+    },
+    {
+      "word": "this",
+      "start": 76.104,
+      "end": 76.29
+    },
+    {
+      "word": "gate.",
+      "start": 76.371,
+      "end": 76.871
+    },
+    {
+      "word": "<break",
+      "start": 78.275,
+      "end": 78.275
+    },
+    {
+      "word": "time=\"1.0s\"",
+      "start": 78.275,
+      "end": 78.275
+    },
+    {
+      "word": "/>",
+      "start": 78.275,
+      "end": 78.275
+    },
+    {
+      "word": "Here",
+      "start": 78.275,
+      "end": 78.612
+    },
+    {
+      "word": "is",
+      "start": 78.693,
+      "end": 78.867
+    },
+    {
+      "word": "the",
+      "start": 78.925,
+      "end": 79.007
+    },
+    {
+      "word": "whole",
+      "start": 79.065,
+      "end": 79.343
+    },
+    {
+      "word": "trust",
+      "start": 79.378,
+      "end": 79.785
+    },
+    {
+      "word": "boundary.",
+      "start": 79.854,
+      "end": 80.528
+    },
+    {
+      "word": "The",
+      "start": 80.806,
+      "end": 80.911
+    },
+    {
+      "word": "browser",
+      "start": 80.969,
+      "end": 81.352
+    },
+    {
+      "word": "holds",
+      "start": 81.41,
+      "end": 81.689
+    },
+    {
+      "word": "only",
+      "start": 81.782,
+      "end": 82.06
+    },
+    {
+      "word": "publishable",
+      "start": 82.153,
+      "end": 82.791
+    },
+    {
+      "word": "configuration.",
+      "start": 82.826,
+      "end": 83.929
+    },
+    {
+      "word": "The",
+      "start": 84.254,
+      "end": 84.382
+    },
+    {
+      "word": "server",
+      "start": 84.44,
+      "end": 84.8
+    },
+    {
+      "word": "owns",
+      "start": 84.881,
+      "end": 85.195
+    },
+    {
+      "word": "the",
+      "start": 85.253,
+      "end": 85.322
+    },
+    {
+      "word": "catalog,",
+      "start": 85.369,
+      "end": 85.949
+    },
+    {
+      "word": "the",
+      "start": 86.065,
+      "end": 86.17
+    },
+    {
+      "word": "pricing",
+      "start": 86.228,
+      "end": 86.634
+    },
+    {
+      "word": "and",
+      "start": 86.681,
+      "end": 86.75
+    },
+    {
+      "word": "the",
+      "start": 86.785,
+      "end": 86.855
+    },
+    {
+      "word": "gate,",
+      "start": 86.901,
+      "end": 87.366
+    },
+    {
+      "word": "and",
+      "start": 87.575,
+      "end": 87.737
+    },
+    {
+      "word": "it",
+      "start": 87.807,
+      "end": 87.888
+    },
+    {
+      "word": "holds",
+      "start": 87.946,
+      "end": 88.26
+    },
+    {
+      "word": "the",
+      "start": 88.329,
+      "end": 88.399
+    },
+    {
+      "word": "credentials.",
+      "start": 88.457,
+      "end": 89.363
+    },
+    {
+      "word": "PayPal",
+      "start": 89.874,
+      "end": 90.338
+    },
+    {
+      "word": "alone",
+      "start": 90.431,
+      "end": 90.93
+    },
+    {
+      "word": "decides",
+      "start": 90.988,
+      "end": 91.476
+    },
+    {
+      "word": "whether",
+      "start": 91.511,
+      "end": 91.754
+    },
+    {
+      "word": "money",
+      "start": 91.824,
+      "end": 92.079
+    },
+    {
+      "word": "moved.",
+      "start": 92.172,
+      "end": 92.753
+    },
+    {
+      "word": "The",
+      "start": 92.997,
+      "end": 93.101
+    },
+    {
+      "word": "model",
+      "start": 93.148,
+      "end": 93.391
+    },
+    {
+      "word": "proposes;",
+      "start": 93.449,
+      "end": 94.274
+    },
+    {
+      "word": "it",
+      "start": 94.39,
+      "end": 94.552
+    },
+    {
+      "word": "never",
+      "start": 94.645,
+      "end": 94.947
+    },
+    {
+      "word": "pays.",
+      "start": 95.017,
+      "end": 95.632
+    },
+    {
+      "word": "<break",
+      "start": 96.689,
+      "end": 96.689
+    },
+    {
+      "word": "time=\"1.0s\"",
+      "start": 96.689,
+      "end": 96.689
+    },
+    {
+      "word": "/>",
+      "start": 96.689,
+      "end": 96.689
+    },
+    {
+      "word": "The",
+      "start": 96.689,
+      "end": 96.805
+    },
+    {
+      "word": "buyer",
+      "start": 96.851,
+      "end": 97.13
+    },
+    {
+      "word": "approves",
+      "start": 97.176,
+      "end": 97.606
+    },
+    {
+      "word": "on",
+      "start": 97.664,
+      "end": 97.757
+    },
+    {
+      "word": "PayPal's",
+      "start": 97.826,
+      "end": 98.349
+    },
+    {
+      "word": "own",
+      "start": 98.418,
+      "end": 98.627
+    },
+    {
+      "word": "page,",
+      "start": 98.709,
+      "end": 99.22
+    },
+    {
+      "word": "and",
+      "start": 99.394,
+      "end": 99.533
+    },
+    {
+      "word": "the",
+      "start": 99.579,
+      "end": 99.649
+    },
+    {
+      "word": "server",
+      "start": 99.696,
+      "end": 100.021
+    },
+    {
+      "word": "reads",
+      "start": 100.114,
+      "end": 100.416
+    },
+    {
+      "word": "the",
+      "start": 100.474,
+      "end": 100.555
+    },
+    {
+      "word": "order",
+      "start": 100.648,
+      "end": 100.915
+    },
+    {
+      "word": "back",
+      "start": 100.961,
+      "end": 101.194
+    },
+    {
+      "word": "and",
+      "start": 101.275,
+      "end": 101.437
+    },
+    {
+      "word": "captures",
+      "start": 101.553,
+      "end": 102.041
+    },
+    {
+      "word": "it.",
+      "start": 102.099,
+      "end": 102.424
+    },
+    {
+      "word": "Order",
+      "start": 102.807,
+      "end": 103.086
+    },
+    {
+      "word": "zero",
+      "start": 103.144,
+      "end": 103.516
+    },
+    {
+      "word": "S",
+      "start": 103.632,
+      "end": 103.783
+    },
+    {
+      "word": "L",
+      "start": 103.934,
+      "end": 104.05
+    },
+    {
+      "word": "zero",
+      "start": 104.166,
+      "end": 104.514
+    },
+    {
+      "word": "five",
+      "start": 104.595,
+      "end": 104.886
+    },
+    {
+      "word": "seven",
+      "start": 104.932,
+      "end": 105.234
+    },
+    {
+      "word": "three",
+      "start": 105.303,
+      "end": 105.605
+    },
+    {
+      "word": "eight",
+      "start": 105.687,
+      "end": 106.0
+    },
+    {
+      "word": "S",
+      "start": 106.07,
+      "end": 106.221
+    },
+    {
+      "word": "seven",
+      "start": 106.279,
+      "end": 106.592
+    },
+    {
+      "word": "two",
+      "start": 106.65,
+      "end": 106.848
+    },
+    {
+      "word": "six",
+      "start": 106.929,
+      "end": 107.231
+    },
+    {
+      "word": "two",
+      "start": 107.3,
+      "end": 107.498
+    },
+    {
+      "word": "three",
+      "start": 107.579,
+      "end": 107.858
+    },
+    {
+      "word": "zero",
+      "start": 107.916,
+      "end": 108.252
+    },
+    {
+      "word": "four",
+      "start": 108.334,
+      "end": 108.519
+    },
+    {
+      "word": "T;",
+      "start": 108.589,
+      "end": 108.995
+    },
+    {
+      "word": "sixteen",
+      "start": 109.274,
+      "end": 109.773
+    },
+    {
+      "word": "hundred",
+      "start": 109.831,
+      "end": 110.145
+    },
+    {
+      "word": "and",
+      "start": 110.18,
+      "end": 110.249
+    },
+    {
+      "word": "forty",
+      "start": 110.307,
+      "end": 110.656
+    },
+    {
+      "word": "US",
+      "start": 110.772,
+      "end": 111.074
+    },
+    {
+      "word": "dollars;",
+      "start": 111.143,
+      "end": 111.654
+    },
+    {
+      "word": "capture",
+      "start": 111.979,
+      "end": 112.432
+    },
+    {
+      "word": "id",
+      "start": 112.513,
+      "end": 112.769
+    },
+    {
+      "word": "six",
+      "start": 112.978,
+      "end": 113.291
+    },
+    {
+      "word": "Y",
+      "start": 113.407,
+      "end": 113.558
+    },
+    {
+      "word": "S",
+      "start": 113.674,
+      "end": 113.79
+    },
+    {
+      "word": "two",
+      "start": 113.872,
+      "end": 114.081
+    },
+    {
+      "word": "eight",
+      "start": 114.197,
+      "end": 114.417
+    },
+    {
+      "word": "six",
+      "start": 114.464,
+      "end": 114.696
+    },
+    {
+      "word": "nine",
+      "start": 114.766,
+      "end": 115.009
+    },
+    {
+      "word": "six",
+      "start": 115.056,
+      "end": 115.358
+    },
+    {
+      "word": "two",
+      "start": 115.427,
+      "end": 115.613
+    },
+    {
+      "word": "F",
+      "start": 115.729,
+      "end": 115.845
+    },
+    {
+      "word": "seven",
+      "start": 115.903,
+      "end": 116.24
+    },
+    {
+      "word": "two",
+      "start": 116.298,
+      "end": 116.496
+    },
+    {
+      "word": "three",
+      "start": 116.577,
+      "end": 116.878
+    },
+    {
+      "word": "two",
+      "start": 116.936,
+      "end": 117.157
+    },
+    {
+      "word": "one",
+      "start": 117.273,
+      "end": 117.459
+    },
+    {
+      "word": "zero",
+      "start": 117.505,
+      "end": 117.888
+    },
+    {
+      "word": "Y.",
+      "start": 117.97,
+      "end": 118.411
+    },
+    {
+      "word": "PayPal",
+      "start": 118.794,
+      "end": 119.212
+    },
+    {
+      "word": "reports:",
+      "start": 119.282,
+      "end": 119.862
+    },
+    {
+      "word": "completed.",
+      "start": 119.92,
+      "end": 120.791
+    },
+    {
+      "word": "The",
+      "start": 121.116,
+      "end": 121.22
+    },
+    {
+      "word": "receipt",
+      "start": 121.278,
+      "end": 121.627
+    },
+    {
+      "word": "keeps",
+      "start": 121.696,
+      "end": 121.998
+    },
+    {
+      "word": "what",
+      "start": 122.033,
+      "end": 122.196
+    },
+    {
+      "word": "PayPal",
+      "start": 122.254,
+      "end": 122.672
+    },
+    {
+      "word": "reported.",
+      "start": 122.753,
+      "end": 123.542
+    },
+    {
+      "word": "What",
+      "start": 123.867,
+      "end": 124.065
+    },
+    {
+      "word": "is",
+      "start": 124.123,
+      "end": 124.204
+    },
+    {
+      "word": "still",
+      "start": 124.251,
+      "end": 124.518
+    },
+    {
+      "word": "unproven",
+      "start": 124.634,
+      "end": 125.342
+    },
+    {
+      "word": "is",
+      "start": 125.423,
+      "end": 125.586
+    },
+    {
+      "word": "on",
+      "start": 125.644,
+      "end": 125.713
+    },
+    {
+      "word": "the",
+      "start": 125.748,
+      "end": 125.818
+    },
+    {
+      "word": "record",
+      "start": 125.876,
+      "end": 126.259
+    },
+    {
+      "word": "too:",
+      "start": 126.317,
+      "end": 126.816
+    },
+    {
+      "word": "a",
+      "start": 127.2,
+      "end": 127.269
+    },
+    {
+      "word": "webhook",
+      "start": 127.362,
+      "end": 127.78
+    },
+    {
+      "word": "delivery",
+      "start": 127.838,
+      "end": 128.21
+    },
+    {
+      "word": "was",
+      "start": 128.256,
+      "end": 128.372
+    },
+    {
+      "word": "verified",
+      "start": 128.465,
+      "end": 129.057
+    },
+    {
+      "word": "against",
+      "start": 129.115,
+      "end": 129.498
+    },
+    {
+      "word": "PayPal's",
+      "start": 129.568,
+      "end": 130.114
+    },
+    {
+      "word": "own",
+      "start": 130.183,
+      "end": 130.415
+    },
+    {
+      "word": "verifier,",
+      "start": 130.497,
+      "end": 131.263
+    },
+    {
+      "word": "but",
+      "start": 131.542,
+      "end": 131.704
+    },
+    {
+      "word": "no",
+      "start": 131.785,
+      "end": 131.948
+    },
+    {
+      "word": "signed",
+      "start": 132.041,
+      "end": 132.343
+    },
+    {
+      "word": "event",
+      "start": 132.389,
+      "end": 132.726
+    },
+    {
+      "word": "has",
+      "start": 132.784,
+      "end": 132.9
+    },
+    {
+      "word": "yet",
+      "start": 132.97,
+      "end": 133.144
+    },
+    {
+      "word": "applied",
+      "start": 133.19,
+      "end": 133.562
+    },
+    {
+      "word": "a",
+      "start": 133.597,
+      "end": 133.631
+    },
+    {
+      "word": "state",
+      "start": 133.69,
+      "end": 133.991
+    },
+    {
+      "word": "change,",
+      "start": 134.038,
+      "end": 134.607
+    },
+    {
+      "word": "and",
+      "start": 134.932,
+      "end": 135.164
+    },
+    {
+      "word": "timeouts",
+      "start": 135.245,
+      "end": 135.803
+    },
+    {
+      "word": "and",
+      "start": 135.849,
+      "end": 135.93
+    },
+    {
+      "word": "declines",
+      "start": 135.977,
+      "end": 136.557
+    },
+    {
+      "word": "are",
+      "start": 136.627,
+      "end": 136.836
+    },
+    {
+      "word": "untested.",
+      "start": 136.917,
+      "end": 138.159
+    }
+  ]
+}
