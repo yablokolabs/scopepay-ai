@@ -1,0 +1,2 @@
+# Renders are reproducible from the timeline: npx videowright render <slug>
+videos/*/*.mp4
