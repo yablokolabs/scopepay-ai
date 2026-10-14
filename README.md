@@ -1,3 +1,5 @@
+<p align="center"><img src="scopepay-ai-logo.png" alt="ScopePay. Agree on the work. Approve the payment." width="560"></p>
+
 # ScopePay
 **Tagline:** Agree on the work. Approve the payment.
 **Repository:** [yablokolabs/scopepay-ai](https://github.com/yablokolabs/scopepay-ai) (public).
