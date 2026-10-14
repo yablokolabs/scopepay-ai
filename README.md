@@ -36,7 +36,7 @@ CSCS Apertus 1.5 70B ──── proposes catalog item ids + evidence spans + a
    │                      (never a price, never an approval)
    ▼
 Zod-validated proposal ──► merchant review (quantity-only edits, authoritative)
-   │                                                                    
+   │
    ▼
 Immutable ScopeVersion (sha256 hash over the canonical payload, integer cents)
    │  buyer accepts THIS hash and THIS amount
@@ -60,9 +60,19 @@ Components: browser client (Vite + React), Hono server routes, Zod schemas as th
 only entry point for untrusted input, catalog-driven integer-cent pricing, three
 storage adapters (memory / local file / Cloudflare D1) behind one interface.
 
-The architecture diagram required by the submission (self-contained SVG plus a
-PNG embedded here) has **not** been produced yet; no placeholder image is
-embedded. See `docs/MEDIA_WORKFLOWS.md` for the intended workflow and palette.
+![ScopePay architecture](docs/architecture.png)
+
+ScopePay payment architecture: the buyer's browser, the server process and its
+trust boundary, the CSCS Apertus model behind an id-only contract, the
+deterministic gate that is the only path from a scope version to a provider call,
+and the PayPal sandbox that decides whether money moved. Every box is implemented;
+nothing is drawn as "planned".
+
+Sources: [`docs/architecture.svg`](docs/architecture.svg) (standalone, scalable)
+and [`docs/architecture.html`](docs/architecture.html) (the generator output).
+Built with [diagram-design](https://github.com/cathrynlavery/diagram-design)
+pinned at `11b08ea`. Export with `node videos/scripts/export-diagram.mjs`; check
+with `node videos/scripts/check-diagram.mjs`.
 
 ### Trust boundary
 
