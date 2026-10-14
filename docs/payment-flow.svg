@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg viewBox="0 0 960 512" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="flow-title flow-desc" id="payment-flow-root">
+      <title id="flow-title">ScopePay payment flow</title>
+      <desc id="flow-desc">An untrusted brief becomes catalog ids proposed by Apertus, a merchant-reviewed and immutable scope version, and a buyer acceptance of that exact hash and amount. A deterministic server gate either rejects the request or lets it reach PayPal sandbox: order, buyer approval, capture verified only on COMPLETED, and a receipt. A later change is classified and priced by the server and always becomes a new version.</desc>
+        <defs>
+      <style>@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&amp;family=Geist:wght@400;500;600&amp;family=Geist+Mono:wght@400;500;600&amp;family=Noto+Serif:ital@0;1&amp;family=Noto+Sans+KR:wght@400;500;600&amp;family=Noto+Serif+KR:wght@400&amp;family=Noto+Sans+TC:wght@400;500;600&amp;family=Noto+Serif+TC:wght@400&amp;display=swap');
+      #payment-flow-root { --color-paper:       #faf6ee;  
+      --color-paper-2:     #f1ebdf;
+      --color-ink:         #2e2246;  
+      --color-muted:       #5a5170;
+      --color-soft:        #6f6685;
+      --color-accent:      #0f7b72;  
+      --color-link:        #4c6ba8;
+      --font-sans:         'Geist', system-ui, sans-serif;
+      --font-serif:        'Instrument Serif', serif;
+      --font-mono:         'Geist Mono', ui-monospace, monospace; }
+      #payment-flow-root { font-family: var(--font-sans); color: var(--color-ink); }
+      #payment-flow-root .diagram { overflow-x: auto; }</style>
+          <pattern id="payment-flow-dots" width="22" height="22" patternUnits="userSpaceOnUse">
+            <circle cx="1" cy="1" r="0.9" fill="rgba(46,34,70,0.10)"/>
+          </pattern>
+          <marker id="payment-flow-arrow" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#5a5170"/></marker>
+          <marker id="payment-flow-arrow-accent" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#0f7b72"/></marker>
+        </defs>
+
+        <rect width="100%" height="100%" fill="#faf6ee"/>
+        <rect width="100%" height="100%" fill="url(#payment-flow-dots)" opacity="0.55"/>
+
+        <!-- Arrows first, so connections sit behind the node fills -->
+        <line x1="180" y1="94" x2="222" y2="94" stroke="#5a5170" stroke-width="1.2" marker-end="url(#payment-flow-arrow)"/>
+        <line x1="366" y1="94" x2="408" y2="94" stroke="#5a5170" stroke-width="1.2" marker-end="url(#payment-flow-arrow)"/>
+        <line x1="552" y1="94" x2="594" y2="94" stroke="#5a5170" stroke-width="1.2" marker-end="url(#payment-flow-arrow)"/>
+        <line x1="738" y1="94" x2="780" y2="94" stroke="#5a5170" stroke-width="1.2" marker-end="url(#payment-flow-arrow)"/>
+        <line x1="852" y1="124" x2="852" y2="218" stroke="#5a5170" stroke-width="1.2" marker-end="url(#payment-flow-arrow)"/>
+        <line x1="780" y1="262" x2="738" y2="262" stroke="#0f7b72" stroke-width="1.4" marker-end="url(#payment-flow-arrow-accent)"/>
+        <line x1="594" y1="262" x2="552" y2="262" stroke="#5a5170" stroke-width="1.2" marker-end="url(#payment-flow-arrow)"/>
+        <line x1="408" y1="262" x2="366" y2="262" stroke="#5a5170" stroke-width="1.2" marker-end="url(#payment-flow-arrow)"/>
+        <line x1="222" y1="262" x2="180" y2="262" stroke="#5a5170" stroke-width="1.2" marker-end="url(#payment-flow-arrow)"/>
+        <line x1="852" y1="306" x2="852" y2="380" stroke="#5a5170" stroke-width="1.2" marker-end="url(#payment-flow-arrow)"/>
+        <line x1="108" y1="292" x2="108" y2="380" stroke="#5a5170" stroke-width="1.2" stroke-dasharray="4,3" marker-end="url(#payment-flow-arrow)"/>
+        <line x1="180" y1="410" x2="222" y2="410" stroke="#5a5170" stroke-width="1.2" stroke-dasharray="4,3" marker-end="url(#payment-flow-arrow)"/>
+        <line x1="366" y1="410" x2="408" y2="410" stroke="#5a5170" stroke-width="1.2" stroke-dasharray="4,3" marker-end="url(#payment-flow-arrow)"/>
+        <line x1="552" y1="410" x2="594" y2="410" stroke="#5a5170" stroke-width="1.2" stroke-dasharray="4,3" marker-end="url(#payment-flow-arrow)"/>
+
+        <!-- Arrow labels, each on an opaque mask with a visible gap from its stroke -->
+        <rect x="741" y="244" width="36" height="12" rx="2" fill="#faf6ee"/>
+        <text x="759" y="253" fill="#0f7b72" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.12em">PASS</text>
+        <rect x="858" y="337" width="32" height="12" rx="2" fill="#faf6ee"/>
+        <text x="874" y="346" fill="#5a5170" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.12em">FAIL</text>
+        <rect x="114" y="330" width="40" height="12" rx="2" fill="#faf6ee"/>
+        <text x="134" y="339" fill="#5a5170" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.12em">LATER</text>
+
+        <!-- Brief -->
+        <rect x="36" y="64" width="144" height="60" rx="20" fill="#faf6ee"/>
+        <rect x="36" y="64" width="144" height="60" rx="20" fill="#2e2246" stroke="#2e2246" stroke-width="1" fill-opacity="0.03" stroke-opacity="0.30"/>
+        <text x="108" y="88" fill="#2e2246" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Brief</text>
+        <text x="108" y="102" fill="#5a5170" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">untrusted text</text>
+        <text x="108" y="114" fill="#5a5170" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">POST /api/briefs</text>
+        <!-- Apertus proposes -->
+        <rect x="222" y="64" width="144" height="60" rx="6" fill="#faf6ee"/>
+        <rect x="222" y="64" width="144" height="60" rx="6" fill="#ffffff" stroke="#2e2246" stroke-width="1"/>
+        <text x="294" y="88" fill="#2e2246" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Apertus proposes</text>
+        <text x="294" y="102" fill="#5a5170" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">catalog ids · evidence</text>
+        <text x="294" y="114" fill="#5a5170" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">never a price</text>
+        <!-- Merchant review -->
+        <rect x="408" y="64" width="144" height="60" rx="6" fill="#faf6ee"/>
+        <rect x="408" y="64" width="144" height="60" rx="6" fill="#ffffff" stroke="#2e2246" stroke-width="1"/>
+        <text x="480" y="88" fill="#2e2246" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Merchant review</text>
+        <text x="480" y="102" fill="#5a5170" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">Zod-validated input</text>
+        <text x="480" y="114" fill="#5a5170" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">quantity-only edits</text>
+        <!-- Immutable version -->
+        <rect x="594" y="64" width="144" height="60" rx="6" fill="#faf6ee"/>
+        <rect x="594" y="64" width="144" height="60" rx="6" fill="#ffffff" stroke="#2e2246" stroke-width="1"/>
+        <text x="666" y="88" fill="#2e2246" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Immutable version</text>
+        <text x="666" y="102" fill="#5a5170" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">sha256 · integer cents</text>
+        <text x="666" y="114" fill="#5a5170" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">never rewritten</text>
+        <!-- Buyer accepts -->
+        <rect x="780" y="64" width="144" height="60" rx="6" fill="#faf6ee"/>
+        <rect x="780" y="64" width="144" height="60" rx="6" fill="#ffffff" stroke="#2e2246" stroke-width="1"/>
+        <text x="852" y="88" fill="#2e2246" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Buyer accepts</text>
+        <text x="852" y="102" fill="#5a5170" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">this hash</text>
+        <text x="852" y="114" fill="#5a5170" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">this amount</text>
+        <!-- Decision: the deterministic gate (focal) -->
+        <polygon points="852,218 924,262 852,306 780,262" fill="#faf6ee"/>
+        <polygon points="852,218 924,262 852,306 780,262" fill="#0f7b72" stroke="#0f7b72" stroke-width="1" fill-opacity="0.08"/>
+        <text x="852" y="260" fill="#2e2246" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Server gate</text>
+        <text x="852" y="274" fill="#5a5170" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">all checks pass?</text>
+        <!-- PayPal order -->
+        <rect x="594" y="232" width="144" height="60" rx="6" fill="#faf6ee"/>
+        <rect x="594" y="232" width="144" height="60" rx="6" fill="#ffffff" stroke="#2e2246" stroke-width="1"/>
+        <text x="666" y="256" fill="#2e2246" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">PayPal order</text>
+        <text x="666" y="270" fill="#5a5170" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">sandbox create</text>
+        <text x="666" y="282" fill="#5a5170" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">Paypal-Request-Id</text>
+        <!-- Buyer approves -->
+        <rect x="408" y="232" width="144" height="60" rx="6" fill="#faf6ee"/>
+        <rect x="408" y="232" width="144" height="60" rx="6" fill="#ffffff" stroke="#2e2246" stroke-width="1"/>
+        <text x="480" y="260" fill="#2e2246" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Buyer approves</text>
+        <text x="480" y="274" fill="#5a5170" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">on PayPal's own page</text>
+        <!-- Server capture -->
+        <rect x="222" y="232" width="144" height="60" rx="6" fill="#faf6ee"/>
+        <rect x="222" y="232" width="144" height="60" rx="6" fill="#ffffff" stroke="#2e2246" stroke-width="1"/>
+        <text x="294" y="256" fill="#2e2246" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Server capture</text>
+        <text x="294" y="270" fill="#5a5170" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">paid only when PayPal</text>
+        <text x="294" y="282" fill="#5a5170" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">reports COMPLETED</text>
+        <!-- Receipt -->
+        <rect x="36" y="232" width="144" height="60" rx="20" fill="#faf6ee"/>
+        <rect x="36" y="232" width="144" height="60" rx="20" fill="#2e2246" stroke="#2e2246" stroke-width="1" fill-opacity="0.03" stroke-opacity="0.30"/>
+        <text x="108" y="256" fill="#2e2246" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Receipt</text>
+        <text x="108" y="270" fill="#5a5170" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">real capture id</text>
+        <text x="108" y="282" fill="#5a5170" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">webhooks · reconcile</text>
+        <!-- Later change -->
+        <rect x="36" y="380" width="144" height="60" rx="20" fill="#faf6ee"/>
+        <rect x="36" y="380" width="144" height="60" rx="20" fill="#2e2246" stroke="#2e2246" stroke-width="1" fill-opacity="0.03" stroke-opacity="0.30"/>
+        <text x="108" y="408" fill="#2e2246" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Later change</text>
+        <text x="108" y="422" fill="#5a5170" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">after payment</text>
+        <!-- Classify change -->
+        <rect x="222" y="380" width="144" height="60" rx="6" fill="#faf6ee"/>
+        <rect x="222" y="380" width="144" height="60" rx="6" fill="#ffffff" stroke="#2e2246" stroke-width="1"/>
+        <text x="294" y="408" fill="#2e2246" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Classify change</text>
+        <text x="294" y="422" fill="#5a5170" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">change request</text>
+        <!-- Server-priced delta -->
+        <rect x="408" y="380" width="144" height="60" rx="6" fill="#faf6ee"/>
+        <rect x="408" y="380" width="144" height="60" rx="6" fill="#ffffff" stroke="#2e2246" stroke-width="1"/>
+        <text x="480" y="408" fill="#2e2246" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Server-priced delta</text>
+        <text x="480" y="422" fill="#5a5170" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">catalog prices only</text>
+        <!-- NEW version -->
+        <rect x="594" y="380" width="144" height="60" rx="20" fill="#faf6ee"/>
+        <rect x="594" y="380" width="144" height="60" rx="20" fill="#2e2246" stroke="#2e2246" stroke-width="1" fill-opacity="0.03" stroke-opacity="0.30"/>
+        <text x="666" y="404" fill="#2e2246" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">NEW version</text>
+        <text x="666" y="418" fill="#5a5170" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">paid one never rewritten</text>
+        <text x="666" y="430" fill="#5a5170" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">never re-charged</text>
+        <!-- Rejected -->
+        <rect x="780" y="380" width="144" height="60" rx="20" fill="#faf6ee"/>
+        <rect x="780" y="380" width="144" height="60" rx="20" fill="#2e2246" stroke="#2e2246" stroke-width="1" fill-opacity="0.03" stroke-opacity="0.30"/>
+        <text x="852" y="404" fill="#2e2246" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Rejected</text>
+        <text x="852" y="418" fill="#5a5170" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">status · merchant · hash</text>
+        <text x="852" y="430" fill="#5a5170" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">amount · currency</text>
+
+        <!-- Legend: shape carries type -->
+        <line x1="40" y1="476" x2="920" y2="476" stroke="#2e2246" stroke-width="0.8" stroke-opacity="0.10"/>
+        <text x="40" y="496" fill="#5a5170" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.18em">LEGEND</text>
+        <rect x="130" y="486" width="24" height="12" rx="6" fill="#2e2246" stroke="#2e2246" stroke-width="1" fill-opacity="0.03" stroke-opacity="0.30"/>
+        <text x="162" y="496" fill="#5a5170" font-size="8.5" font-family="'Geist', sans-serif">Start / end</text>
+        <rect x="250" y="486" width="24" height="12" rx="2" fill="#ffffff" stroke="#2e2246" stroke-width="1"/>
+        <text x="282" y="496" fill="#5a5170" font-size="8.5" font-family="'Geist', sans-serif">Step</text>
+        <polygon points="356,492 368,486 380,492 368,498" fill="#0f7b72" stroke="#0f7b72" stroke-width="1" fill-opacity="0.08"/>
+        <text x="388" y="496" fill="#5a5170" font-size="8.5" font-family="'Geist', sans-serif">Decision</text>
+        <line x1="470" y1="492" x2="498" y2="492" stroke="#0f7b72" stroke-width="1.4" marker-end="url(#payment-flow-arrow-accent)"/>
+        <text x="506" y="496" fill="#5a5170" font-size="8.5" font-family="'Geist', sans-serif">Gate-authorized path</text>
+        <line x1="640" y1="492" x2="668" y2="492" stroke="#5a5170" stroke-width="1.2" stroke-dasharray="4,3" marker-end="url(#payment-flow-arrow)"/>
+        <text x="676" y="496" fill="#5a5170" font-size="8.5" font-family="'Geist', sans-serif">Change after payment</text>
+      </svg>
