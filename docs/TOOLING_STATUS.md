@@ -194,7 +194,7 @@ word matched the segment narration. Segment timing comes from those word
 timestamps (each segment ends 0.2s before the next segment's first word), and
 `build-captions.mjs --voiceover v1` times each cue from its first to last spoken
 word, so the captions are no longer provisional. `videowright render
-m2_sandbox_demo` muxes audio track `v1`: `draft.mp4`, 139.67s video and 139.65s
+m2_sandbox_demo` muxes audio track `v1`: `demo.mp4`, 139.67s video and 139.65s
 audio, `check-export.mjs` passing on 12 sampled frames. Renders are not committed
 (`videos/.gitignore`).
 
@@ -208,7 +208,7 @@ audio, `check-export.mjs` passing on 12 sampled frames. Renders are not committe
   `<!-- videowright:end -->`). `git diff --numstat` shows 11 insertions and 0
   deletions, so all five original ScopePay rules are intact. It was **not** written
   to `CLAUDE.md`: Claude Code is installed on this host but was not selected.
-- A narrated draft exists locally (`draft.mp4`); the public YouTube upload remains
+- The narrated demo is `videos/videos/m2_sandbox_demo/demo.mp4`; the public YouTube upload remains
   an unauthorized external publication.
 - In the architecture beat the diagram's arrow and legend labels render at about
   8px on a 1080p frame. A wider figure would make them readable; not done.
