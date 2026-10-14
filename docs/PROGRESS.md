@@ -27,7 +27,7 @@ current commit.
   `11b08ea`, exported to `docs/architecture.svg` and `docs/architecture.png`
   (1920x1120, `videos/scripts/export-diagram.mjs`), embedded in the README.
   `self_check.py` OK, `verify-geometry.py` 0 findings, `check-diagram.mjs` OK.
-- M4 demo video: narrated draft `videos/videos/m2_sandbox_demo/draft.mp4`
+- M4 demo video: narrated demo `videos/videos/m2_sandbox_demo/demo.mp4`
   (139.7s). Voice is Alice (premade British; the free API tier blocks library
   voices and Voice Design). Segment timing and captions come from the narration's
   word timestamps. The public YouTube upload remains unauthorized.
