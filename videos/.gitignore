@@ -1,2 +1,3 @@
-# Renders are reproducible from the timeline: npx videowright render <slug>
+# Renders are reproducible: npx videowright render <slug>. Only the review draft is kept.
 videos/*/*.mp4
+!videos/m2_sandbox_demo/draft.mp4
