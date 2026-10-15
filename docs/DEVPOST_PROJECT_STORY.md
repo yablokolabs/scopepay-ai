@@ -8,7 +8,7 @@ A client brief goes in as untrusted text. An AI model proposes which catalog ite
 **PayPal developer platform (sandbox only):**
 - **OAuth 2.0 token API** (`POST /v1/oauth2/token`): gets the server's access token with sandbox app credentials.
 - **Orders API v2**: `POST /v2/checkout/orders` creates the order for the exact accepted amount, with a deterministic `Paypal-Request-Id` for idempotency. `GET /v2/checkout/orders/:id` reconciles state, and `POST /v2/checkout/orders/:id/capture` captures it. The buyer approves on PayPal's own approval page. A capture counts only when PayPal reports `COMPLETED`.
-- **Webhooks API**: `POST /api/webhooks/paypal` receives events. Every event is checked through `POST /v1/notifications/verify-webhook-signature` before it is used. During testing the webhook was registered with `POST /v1/notifications/webhooks` and exercised with `POST /v1/notifications/simulate-event`.
+- **Webhooks API**: `POST /api/webhooks/paypal` receives events. Every event is checked through `POST /v1/notifications/verify-webhook-signature` before it is used. During testing the webhook was registered with `POST /v1/notifications/webhooks` and exercised with `POST /v1/notifications/simulate-event`. On the live demo, real signed events for a real order were verified.
 - **Sandbox accounts**: a sandbox merchant and a sandbox buyer. A real sandbox capture completed: `6YS286962F723210Y`, `1640.00 USD`.
 
 **AI model:**
@@ -26,7 +26,8 @@ The live sandbox run found three defects that mocked tests had missed. Each was 
 ## Accomplishments that we're proud of
 - A real PayPal sandbox capture, recorded with its capture id in `docs/proof/PROOF_M2_SANDBOX.md`.
 - Live Apertus extraction, recorded in `docs/proof/`.
-- 109 automated tests.
+- A live demo on Cloudflare Workers with D1, with three real sandbox captures on it.
+- 125 automated tests.
 - A model that has no authority over money: every amount comes from the server's catalog.
 
 ## What we learned

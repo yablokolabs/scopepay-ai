@@ -1,10 +1,28 @@
 # ScopePay durable state
 
-Last checkpoint: October 14, 2026 (Asia/Kolkata). Branch `main`. File state is
-authoritative; run `git log` for the current commit — this session's changes are
-**not committed yet**.
+Last checkpoint: October 15, 2026 (Asia/Kolkata). Branch `main`. File state is
+authoritative; run `git log` for the current commit. 125 tests pass.
 
-## Done this session
+## Done October 15
+
+- **Live demo on Cloudflare Workers with D1:**
+  https://scopepay.young-disk-9d1c.workers.dev (PR #7). The model routes allow
+  10 calls per minute per IP and answer `429` above that. The Miniflare D1 suite
+  found a real defect: `briefs.text_hash` was `UNIQUE`, and the constraint is now
+  dropped. Tests went 109 → 125.
+- **Hosted payments proven.** Three sandbox captures on the demo, each reconciled
+  `COMPLETED` for 1460.00 USD: `6FT34085B6964715H`, `2E2674460M099332D` and
+  `70J91999JH7336835` (the last one approved by hand). Lightpanda drove the app;
+  Moli approved on PayPal. Evidence: `docs/proof/PROOF_M2_SANDBOX.md` §11.
+- **Real signed webhooks.** The webhook is registered on the demo. For order
+  `85556611218642647`, PayPal sent `CHECKOUT.ORDER.APPROVED` and
+  `PAYMENT.CAPTURE.COMPLETED` about 35 s after the capture. Both were verified
+  and stored as `duplicate`, with no change to state. Evidence: §11.1.
+- Judges' steps in `docs/TESTING.md`. The buyer credentials go only in the
+  Devpost testing notes, never in the repo.
+- Devpost story in `docs/DEVPOST_PROJECT_STORY.md` (PR #6).
+
+## Done October 14
 
 - Sandbox credentials found by name only in the shared env file
   (`PAYPAL_CLIENT_ID`, `PAYPAL_CLIENT_SECRET`), verified sandbox-only before use
@@ -161,17 +179,17 @@ This session, found only by calling the real provider:
 
 ## Open blockers
 
-- **Webhook verification is proven, but no signed event has *applied* state.** A
-  simulated event carries PayPal-generated resource ids, so it matches no local
-  attempt and is stored as `verified`/`ignored`. Reconciliation on demand is what
-  refreshed the real capture, not a webhook.
+- **Real signed webhooks are verified, but none has *applied* state.** On the
+  demo they arrive about 35 s after the app's own capture and are stored as
+  `duplicate`. Showing a webhook that wins the race needs the buyer's return
+  blocked; the automated attempt stopped at PayPal's sign-in captcha.
 - **Redelivery of a real event could not be exercised:** PayPal's
   `POST /v1/notifications/webhooks-events/:id/resend` returned **404** for a
   simulated event, so duplicate handling stays unit-test-only.
 - **Timeout and decline paths** have not been exercised against the provider.
-- **Sites/Vinext tooling is not installed on this host** — Vite + React with a
-  Hono server, D1 written but only unit-checked. Deviation from
-  `PROJECT_BUILD.md` remains unresolved.
+- **Sites/Vinext tooling is not installed on this host.** The build is Vite +
+  React with a Hono server, deployed on Cloudflare Workers with D1. Deviation
+  from `PROJECT_BUILD.md` remains.
 - **Demo video is a draft, not a deliverable.** The narrated cut exists
   (`demo.mp4`); in its architecture beat the diagram's arrow and legend labels
   are about 8px at 1080p. ElevenLabs quota: 2892 characters left, resets
@@ -180,10 +198,9 @@ This session, found only by calling the real provider:
 - Extraction evaluation over the 20 frozen briefs not measured.
 - `LICENSE` currently MIT, chosen to satisfy the public-licensed-source
   requirement — the owner has not confirmed the license choice.
-- Tooling: Hindsight `scopepay-ai` on port 8888 **was** reachable this session
-  and was recalled from; `context-mode`, nori `senior-swe`, headroom and the
-  nori/headroom/ponytail/adhd skill activations remain open. See
-  `docs/TOOLING_STATUS.md`.
+- Tooling: Hindsight `scopepay-ai`, context-mode and the Nori `senior-swe`
+  workflow were used on October 15. Headroom, ponytail and the adhd skill remain
+  open. See `docs/TOOLING_STATUS.md`.
 
 ## Next action
 
@@ -200,19 +217,18 @@ Nothing is blocked on ScopePay code. The remaining work is the unmeasured items:
    that moves the money back on the record that is currently the M2 receipt, so it
    is not done unasked.
 
-Re-running the payment half is unnecessary: the capture id is recorded. If it is
-ever repeated, order `0SL05738S7262304T` is now `COMPLETED` on a `paid` scope, so
-a fresh run needs a new scope version and another buyer approval.
+Re-running the payment half is unnecessary: the capture ids are recorded. A
+fresh run needs new brief text, because identical text reuses a paid scope.
 
 - [x] M0 access/contracts/scaffold
 - [ ] M1 scope/pricing/review — implemented and live-tested; evaluation pending
 - [x] M2 real sandbox checkout/reconciliation — **order, idempotency,
       reconciliation, buyer approval and capture all proven live; real capture id
-      `6YS286962F723210Y`**
+      `6YS286962F723210Y`, plus three hosted captures on the live demo**
 - [ ] M3 change flow/evaluation/adversarial tests — change flow done, evaluation pending
 - [ ] M4 diagrams/video/submission materials — architecture diagram done and
-      embedded; narrated demo rendered (`demo.mp4`); no public YouTube
-      upload
+      embedded; narrated demo rendered (`demo.mp4`); live demo deployed;
+      Devpost story and testing steps written; no public YouTube upload
 
 Checkpoint format and rules: see `docs/SESSION_TOOLING.md`. No secrets, no buyer
 passwords, no footer.
