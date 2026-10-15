@@ -80,6 +80,23 @@ Order creation sends `Paypal-Request-Id` (PayPal's documented idempotency header
 
 The capture payee check compares PayPal's reported `payee.merchant_id` against `PAYPAL_MERCHANT_ID`. On a real sandbox app that id is an opaque account id such as `H6EBGK2NMDSXC`, so it cannot be compared against the catalog's human-readable merchant label — doing so refuses every capture.
 
+## Cloudflare Workers + D1
+
+The demo at `https://scopepay.young-disk-9d1c.workers.dev` runs `worker/index.ts`. It serves `/api/*` and `/health` from the same Hono app as the Node server, and serves the built client from `dist/` with single-page fallback. `wrangler.toml` holds the bindings: D1 as `DB`, and `MODEL_RATE_LIMIT` (10 model calls per caller per minute).
+
+You need a Cloudflare API token with **Workers Scripts: Edit** and **D1: Edit**, exported as `CLOUDFLARE_API_TOKEN` with `CLOUDFLARE_ACCOUNT_ID`.
+
+```bash
+npx wrangler d1 create scopepay                     # put the id into wrangler.toml
+npx wrangler d1 migrations apply scopepay --remote
+npm run build
+npx wrangler deploy
+npx wrangler secret put CSCS_INFERENCE_API_KEY      # and PAYPAL_CLIENT_ID, PAYPAL_CLIENT_SECRET,
+                                                    # PAYPAL_MERCHANT_ID, PAYPAL_WEBHOOK_ID
+```
+
+`PUBLIC_BASE_URL` defaults to the request's own origin on Workers, so PayPal returns the buyer to the deployed URL. Register the PayPal webhook on `<deployed URL>/api/webhooks/paypal` with `node docs/proof/m2-webhook-proof.mjs create <deployed URL>`, then set its id as `PAYPAL_WEBHOOK_ID`.
+
 ## Deviation from the build specification
 
 `PROJECT_BUILD.md` calls for a Sites/Vinext starter with server routes and D1. The Sites/Vinext CLI is **not installed on this host**, so this build uses Vite + React for the client and a Hono server (`@hono/node-server` locally, Worker-compatible routing) with Zod schemas and a D1 adapter behind the same `Store` interface. This is a **deviation to resolve**, not an equivalent: the client is a single-page React app rather than a Sites route tree, and the deployment path to Sites is unverified. Routes keep the intended names (`orders`, `capture`, `webhooks`, `reconcile`, `scope`, `accept`).
