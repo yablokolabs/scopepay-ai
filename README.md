@@ -41,7 +41,7 @@ Built with [diagram-design](https://github.com/cathrynlavery/diagram-design) at 
 | Sandbox order | `POST /api/scopes/:id/orders` | Live on PayPal sandbox |
 | Capture | `POST /api/scopes/:id/capture` | Live; refuses any order that is not `APPROVED` |
 | Reconciliation | `POST /api/scopes/:id/reconcile` | Live on PayPal sandbox |
-| Webhook | `POST /api/webhooks/paypal` | PayPal's verifier rejects forged signatures; registered on the demo |
+| Webhook | `POST /api/webhooks/paypal` | Registered on the demo; real signed events verified, forged ones rejected |
 | Change request | `POST /api/scopes/:id/changes` | Live on Apertus, server-priced |
 
 Real sandbox captures, each reconciled as `COMPLETED`:
@@ -51,6 +51,7 @@ Real sandbox captures, each reconciled as `COMPLETED`:
 | Local server | `0SL05738S7262304T` | `6YS286962F723210Y` | 1640.00 USD |
 | Hosted demo | `59X35490DC4776137` | `6FT34085B6964715H` | 1460.00 USD |
 | Hosted demo | `05T53487Y0618223Y` | `2E2674460M099332D` | 1460.00 USD |
+| Hosted demo, manual approval | `85556611218642647` | `70J91999JH7336835` | 1460.00 USD |
 
 Lightpanda drove the hosted app and Moli approved on PayPal. Commands, results and the defects they found: [`docs/proof/PROOF_M2_SANDBOX.md`](docs/proof/PROOF_M2_SANDBOX.md) and [`docs/proof/SMOKE_TEST_M0.md`](docs/proof/SMOKE_TEST_M0.md).
 
@@ -74,7 +75,7 @@ Deploy to Cloudflare: see [`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md) and `wrangl
 ## Limits
 
 - One merchant, one USD catalog. No tax, shipping, refunds, payouts or marketplace.
-- Not proven yet: a real signed webhook that changes payment state, redelivery of a real event, timeouts and declines.
+- Not proven yet: a webhook that changes payment state before the app does, redelivery of a real event, timeouts and declines. Real events so far arrived after the app's own capture.
 - Extraction quality over the 20 frozen briefs is not measured yet.
 - The build uses Vite + React + Hono instead of the Sites Vinext starter that `PROJECT_BUILD.md` names, because the Sites tooling is not installed here. `docs/DEPLOYMENT.md` records this.
 - The demo video is not on YouTube yet.

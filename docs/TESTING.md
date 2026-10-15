@@ -39,7 +39,7 @@ extract.
 
 - The model routes are limited to 10 requests per minute per IP address. Past
   that you get "Too many model requests"; wait a minute.
-- Webhook deliveries are not configured on the demo, so the receipt is confirmed
-  by capture and reconciliation, not by a webhook.
+- The demo receives PayPal webhooks and checks each signature with PayPal. They
+  arrive about 30 seconds after payment and show in `/api/events`.
 - Source and proof: https://github.com/yablokolabs/scopepay-ai, in particular
   `docs/proof/PROOF_M2_SANDBOX.md`.
