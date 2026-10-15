@@ -27,9 +27,10 @@ Values live in `.env` locally or in the host's secret store; `.env` is git-ignor
 | `PAYPAL_CLIENT_ID` | sandbox REST app client ID (publishable configuration, but still set per environment) |
 | `PAYPAL_CLIENT_SECRET` | sandbox REST app secret — server-side only, never in client code, logs or exports |
 | `PAYPAL_WEBHOOK_ID` | sandbox webhook id used to verify signatures |
+| `PAYPAL_MERCHANT_ID` | PayPal's payee merchant id for this sandbox app (`purchase_units[].payee.merchant_id`), used to check that a capture lands in the expected account. Not the same as `MERCHANT_ID`. Unset is treated as "unverified", not as a match |
 | `PAYPAL_IDEMPOTENCY_KEY_PREFIX` | prefix for the local request key sent as `Paypal-Request-Id` (default `scopepay`) |
 | `MERCHANT_ID` / `MERCHANT_NAME` | the single sandbox merchant this build is configured for |
-| `PUBLIC_BASE_URL` | absolute base URL used for PayPal return/cancel URLs (default `http://localhost:<PORT>`) |
+| `PUBLIC_BASE_URL` | absolute base URL used for PayPal return/cancel URLs, and for the webhook URL in step 3. Must be the origin that serves the **client**: PayPal sends the buyer's browser to `/checkout/return`, which only the client app implements, so pointing this at the API process returns the buyer to a 404. Defaults to the local client origin `http://localhost:5173`; set it explicitly in every deployment |
 | `PORT` | API port, default `8790` |
 | `SCOPEPAY_STORE` | `file` (default), `memory`, or `d1` |
 | `SCOPEPAY_STORE_FILE` | optional path override for the file store (default `.data/scopepay-store.json`) |
@@ -60,11 +61,24 @@ Scope versions are insert-only; only the status lifecycle columns are ever updat
 ## PayPal sandbox setup
 
 1. Create a developer app at `https://developer.paypal.com/dashboard/applications/sandbox` and copy its client ID and secret into `PAYPAL_CLIENT_ID` / `PAYPAL_CLIENT_SECRET`.
-2. Create a sandbox buyer test account. Do not store its password in the repository, the video, or any export.
-3. Add a webhook pointing at `POST {PUBLIC_BASE_URL}/api/webhooks/paypal` and subscribe to the four event types the handler applies: `PAYMENT.CAPTURE.COMPLETED`, `PAYMENT.CAPTURE.DENIED`, `PAYMENT.CAPTURE.REFUNDED`, `CHECKOUT.ORDER.APPROVED`. Copy the webhook id into `PAYPAL_WEBHOOK_ID`.
-4. For local webhook testing, expose the local API with an HTTPS tunnel you already control; the signature check needs the raw body, and no scheduled job is required because `POST /api/scopes/:id/reconcile` performs the status refresh on demand.
+2. Create a sandbox **Personal** buyer test account, with the account **country set to United States** and a **USD** balance. Both matter, and they are easy to get wrong:
+   - The buyer must be a *Personal* account. A *Business* account is the seller side; approving an order with it fails with PayPal's `CANNOT_PAY_SELF`.
+   - The account's country must be one whose accounts can send this payment. An India-based Personal account signs in and shows a USD balance, but PayPal refuses the order with `UNSUPPORTED_PAYEE_CURRENCY`, because those accounts are receive-only.
+   - **Country is fixed at creation and cannot be changed afterwards**, and the *Create Account* dialog defaults to your own country. Set it to **United States** explicitly; an account that was already created as India keeps failing regardless of its balance, its added currencies, or how many times it is re-supplied. Verify a candidate account from its profile page: a US account shows `(GMT-07:00) Pacific Time (Los Angeles)`, while an India account shows `(GMT+05:30) Kolkata`.
 
-Order creation sends `Paypal-Request-Id` (PayPal's documented idempotency header) built from the scope id and version hash, so a retried creation returns the original order rather than a second one.
+   Do not store the buyer's password in the repository, the video, or any export. On the Developer Dashboard, *Testing Tools → Sandbox Accounts → Create Account → Personal*, country United States; the generated password can be changed from `⋯ → View/Edit Account`.
+3. Register a webhook on `POST {API origin}/api/webhooks/paypal` and subscribe to the four event types the handler applies: `PAYMENT.CAPTURE.COMPLETED`, `PAYMENT.CAPTURE.DENIED`, `PAYMENT.CAPTURE.REFUNDED`, `CHECKOUT.ORDER.APPROVED`. Copy the webhook id into `PAYPAL_WEBHOOK_ID`.
+   - Note the asymmetry with `PUBLIC_BASE_URL`: the return/cancel URLs are followed by the buyer's **browser** and need the client origin, while a webhook is a server-to-server POST that needs the **API** origin. In a single-origin deployment they are the same host; in the local split they are not (`:5173` for the browser, `:8790`/tunnel for the webhook).
+   - The app's own client id and secret are enough to do this over the API (`POST /v1/notifications/webhooks`) — no dashboard step is required, and no separate webhook credential exists. `docs/proof/m2-webhook-proof.mjs` performs it.
+   - **The URL must be publicly reachable over HTTPS.** PayPal validates it: registering `https://localhost:<PORT>/api/webhooks/paypal` is refused with `400 VALIDATION_ERROR "url Not a valid webhook URL"`, measured against the sandbox host. This is why a webhook id alone cannot produce a signature — the signature exists only per delivery.
+4. For local webhook testing, expose the API on an HTTPS URL you control for the duration of the test (an ephemeral tunnel is enough; the one used for the recorded evidence was cloudflared's, which needs no account), register the webhook on it, and delete it again when the tunnel closes. The signature check needs the raw body, and no scheduled job is required because `POST /api/scopes/:id/reconcile` performs the status refresh on demand.
+5. Test refusal as well as acceptance: a delivery whose `paypal-transmission-sig` was not issued by PayPal must be answered `400` and stored as `invalid_signature`. A signed event that matches no local attempt is stored as `verified`/`ignored` and changes no state.
+
+`PUBLIC_BASE_URL` needs one of the two origins, not either: the return/cancel URLs it builds are followed by the buyer's **browser**, and `/checkout/return` — which reconciles the order, captures it and shows the receipt — is a client route. The API process answers `404` on those paths, so a base URL pointed at the API leaves the buyer with an error page after a successful approval. `server/config.ts` resolves it, the startup log prints the value in use, and a warning is printed when it is unset or names the API process itself.
+
+Order creation sends `Paypal-Request-Id` (PayPal's documented idempotency header) built from the scope id and version hash, so a retried creation returns the original order rather than a second one. The local key is longer than PayPal accepts, so the client projects it onto a deterministic 38-character value before sending; PayPal answers a longer value with `HTTP 500 INTERNAL_SERVICE_ERROR` rather than a validation error.
+
+The capture payee check compares PayPal's reported `payee.merchant_id` against `PAYPAL_MERCHANT_ID`. On a real sandbox app that id is an opaque account id such as `H6EBGK2NMDSXC`, so it cannot be compared against the catalog's human-readable merchant label — doing so refuses every capture.
 
 ## Deviation from the build specification
 

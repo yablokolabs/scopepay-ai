@@ -30,6 +30,8 @@ export interface AppEnv {
   store: Store;
   scopes: ScopeService;
   paypal: PaypalClient | null;
+  /** PayPal's own payee merchant id for this sandbox app; null leaves the capture payee unverified. */
+  paypalMerchantId: string | null;
   cscs: CscsConfig | null;
   requestKeyPrefix: string;
   publicBaseUrl: string;
@@ -81,6 +83,7 @@ export function createApp(env: AppEnv): Hono {
     store: env.store,
     scopes: env.scopes,
     paypal: env.paypal,
+    paypalMerchantId: env.paypalMerchantId,
     requestKeyPrefix: env.requestKeyPrefix,
     publicBaseUrl: env.publicBaseUrl
   };
