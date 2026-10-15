@@ -3,6 +3,7 @@
 # ScopePay
 **Tagline:** Agree on the work. Approve the payment.
 **Repository:** [yablokolabs/scopepay-ai](https://github.com/yablokolabs/scopepay-ai) (public).
+**Live demo (PayPal sandbox):** https://scopepay.young-disk-9d1c.workers.dev · how to test: [`docs/TESTING.md`](docs/TESTING.md)
 **Elevator pitch:** An AI scope-to-checkout assistant for freelancers that turns messy briefs into reviewed deliverables and prices, then links the approved scope to a PayPal sandbox payment.
 
 Build state: the scope half runs end to end — brief → Apertus extraction →
