@@ -190,11 +190,9 @@ This session, found only by calling the real provider:
 - **Sites/Vinext tooling is not installed on this host.** The build is Vite +
   React with a Hono server, deployed on Cloudflare Workers with D1. Deviation
   from `PROJECT_BUILD.md` remains.
-- **Demo video is a draft, not a deliverable.** The narrated cut exists
-  (`demo.mp4`); in its architecture beat the diagram's arrow and legend labels
-  are about 8px at 1080p. ElevenLabs quota: 2892 characters left, resets
-  2026-11-12. The public YouTube upload is external publication and remains
-  unauthorized.
+- **Demo video:** the owner uploaded `demo.mp4` to YouTube on October 15:
+  https://youtu.be/qU9lIEazpBw. In its architecture beat the diagram's arrow and legend labels are about
+  8px at 1080p. ElevenLabs quota: 2892 characters left, resets 2026-11-12.
 - Extraction evaluation over the 20 frozen briefs not measured.
 - `LICENSE` currently MIT, chosen to satisfy the public-licensed-source
   requirement — the owner has not confirmed the license choice.
@@ -228,7 +226,7 @@ fresh run needs new brief text, because identical text reuses a paid scope.
 - [ ] M3 change flow/evaluation/adversarial tests — change flow done, evaluation pending
 - [ ] M4 diagrams/video/submission materials — architecture diagram done and
       embedded; narrated demo rendered (`demo.mp4`); live demo deployed;
-      Devpost story and testing steps written; no public YouTube upload
+      Devpost story and testing steps written; video on YouTube (https://youtu.be/qU9lIEazpBw)
 
 Checkpoint format and rules: see `docs/SESSION_TOOLING.md`. No secrets, no buyer
 passwords, no footer.

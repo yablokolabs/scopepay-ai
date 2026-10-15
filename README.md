@@ -5,7 +5,7 @@
 ScopePay turns a freelancer's messy client brief into a reviewed, priced scope, and ties one exact version of that scope to a PayPal sandbox payment.
 
 - **Live demo:** https://scopepay.young-disk-9d1c.workers.dev ([how to test](docs/TESTING.md))
-- **Demo video:** [`videos/videos/m2_sandbox_demo/demo.mp4`](videos/videos/m2_sandbox_demo/demo.mp4)
+- **Demo video:** https://youtu.be/qU9lIEazpBw (source: [`videos/videos/m2_sandbox_demo/demo.mp4`](videos/videos/m2_sandbox_demo/demo.mp4))
 - **Sandbox only.** No real money moves, and the PayPal client refuses any live environment.
 
 ## How it works
@@ -78,4 +78,3 @@ Deploy to Cloudflare: see [`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md) and `wrangl
 - Not proven yet: a webhook that changes payment state before the app does, redelivery of a real event, timeouts and declines. Real events so far arrived after the app's own capture.
 - Extraction quality over the 20 frozen briefs is not measured yet.
 - The build uses Vite + React + Hono instead of the Sites Vinext starter that `PROJECT_BUILD.md` names, because the Sites tooling is not installed here. `docs/DEPLOYMENT.md` records this.
-- The demo video is not on YouTube yet.

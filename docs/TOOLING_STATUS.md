@@ -210,8 +210,8 @@ audio, `check-export.mjs` passing on 12 sampled frames. Renders are not committe
   `<!-- videowright:end -->`). `git diff --numstat` shows 11 insertions and 0
   deletions, so all five original ScopePay rules are intact. It was **not** written
   to `CLAUDE.md`: Claude Code is installed on this host but was not selected.
-- The narrated demo is `videos/videos/m2_sandbox_demo/demo.mp4`; the public YouTube upload remains
-  an unauthorized external publication.
+- The narrated demo is `videos/videos/m2_sandbox_demo/demo.mp4`; the owner uploaded it to
+  YouTube on October 15: https://youtu.be/qU9lIEazpBw.
 - In the architecture beat the diagram's arrow and legend labels render at about
   8px on a 1080p frame. A wider figure would make them readable; not done.
 - The dev server (`videowright dev`) has not been exercised; only `render` has.
