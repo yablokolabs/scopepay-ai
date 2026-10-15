@@ -405,7 +405,7 @@ API simulator (`/v1/notifications/simulate-event`) against a registered webhook
 id, and the verifier answered `SUCCESS`. The two statements conflict, and the run
 has not been repeated, so treat the `SUCCESS` side as unconfirmed. The forged
 `FAILURE` in §9.3 does not depend on it. A real event for a local order is
-the proof that settles it (see §11).
+the proof that settles it (see §12).
 
 ### 9.3 The negative control, against the same public endpoint
 
@@ -475,7 +475,30 @@ first and fail against the old default: with the API origin restored as the
 fallback, 2 of them fail, reporting
 `expected 'http://localhost:8790' to be 'http://localhost:5173'`.
 
-## 11. Still unproven
+## 11. The same flow on the hosted demo
+
+The Workers deployment (`https://scopepay.young-disk-9d1c.workers.dev`, D1
+storage) was exercised end to end by two headless browsers, on 2026-10-15:
+
+- **Lightpanda** drove ScopePay itself (`docs/proof/hosted-app-flow.mjs`): sample
+  brief, live Apertus extraction, merchant approval, client acceptance, sandbox
+  order. Lightpanda has no layout engine, so it clicks through the DOM.
+- **Moli** approved the order on PayPal's own page (`docs/proof/hosted-approve.mjs`)
+  as the United States Personal sandbox buyer. Lightpanda cannot pass PayPal's
+  sign-in (section 7).
+
+PayPal returned the buyer to `/checkout/return` on the hosted URL, and the client
+captured. Reconciliation re-read both orders from PayPal:
+
+```text
+order 59X35490DC4776137  capture 6FT34085B6964715H  COMPLETED  146000 USD (expected 146000)
+order 05T53487Y0618223Y  capture 2E2674460M099332D  COMPLETED  146000 USD (expected 146000)
+```
+
+The second run used only the committed scripts. The buyer's credentials came
+from the environment and appear in no file or log.
+
+## 12. Still unproven
 
 - **A webhook that *applies* state.** Signature verification is proven (§9), but
   no genuinely signed event has driven a `captured`/`declined` transition, because
