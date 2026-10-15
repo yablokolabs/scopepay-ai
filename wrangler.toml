@@ -13,7 +13,7 @@ run_worker_first = ["/api/*", "/health"]
 [[d1_databases]]
 binding = "DB"
 database_name = "scopepay"
-database_id = "pending-create"
+database_id = "7fa7a710-1afb-4077-8cb6-1b30c1dc01b7"
 migrations_dir = "migrations"
 
 # 10 model calls (brief extraction or change classification) per caller per minute.
