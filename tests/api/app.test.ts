@@ -16,7 +16,8 @@ import {
 import type { ScopeLine, ScopeVersion } from '../../lib/schemas.js';
 import { createScopeService } from '../../lib/scope.js';
 import { createMemoryStore } from '../../lib/store-memory.js';
-import { createApp } from '../../server/app.js';
+import { createApp, type AppEnv } from '../../server/app.js';
+import { createMemoryRateLimiter } from '../../lib/rate-limit.js';
 
 const BRIEF_TEXT =
   'Ashgrove Bakery needs a small new website: one landing page plus a contact form. We will supply the text and the photos ourselves.';
@@ -175,7 +176,7 @@ function createFakePaypal() {
   return { impl, calls, orders, state };
 }
 
-function setup(overrides: { paypalMerchantId?: string | null } = {}) {
+function setup(overrides: { paypalMerchantId?: string | null; modelRateLimit?: AppEnv['modelRateLimit'] } = {}) {
   const store = createMemoryStore();
   const scopes = createScopeService({ store });
   const fake = createFakePaypal();
@@ -191,7 +192,8 @@ function setup(overrides: { paypalMerchantId?: string | null } = {}) {
     cscs: { apiKey: 'test-key', baseUrl: 'http://model.invalid/v1', model: 'swiss-ai/Apertus-v1.5-70B' },
     requestKeyPrefix: 'scopepay-test',
     publicBaseUrl: 'http://localhost:8787',
-    modelName: 'swiss-ai/Apertus-v1.5-70B'
+    modelName: 'swiss-ai/Apertus-v1.5-70B',
+    modelRateLimit: overrides.modelRateLimit
   });
   return { app, store, scopes, calls: fake.calls, state: fake.state };
 }
@@ -681,5 +683,52 @@ describe('webhooks', () => {
     expect(raw).not.toContain('tok-1');
     expect(raw).not.toContain('Authorization');
     expect(raw).not.toContain('access_token');
+  });
+});
+
+describe('model rate limit', () => {
+  const brief = { text: 'A five-page bakery site with copy edits that works on phones.' };
+
+  it('answers 429 once a caller exceeds the limit on model routes', async () => {
+    const ctx = setup({ modelRateLimit: createMemoryRateLimiter({ limit: 2, windowMs: 60_000 }) });
+    const ip = { 'cf-connecting-ip': '203.0.113.7' };
+    const first = await postJson(ctx.app, '/api/briefs', brief, ip);
+    const second = await postJson(ctx.app, '/api/briefs', brief, ip);
+    const third = await postJson(ctx.app, '/api/briefs', brief, ip);
+    expect(first.status).not.toBe(429);
+    expect(second.status).not.toBe(429);
+    expect(third.status).toBe(429);
+    expect(((await third.json()) as { error: { code: string } }).error.code).toBe('rate_limited');
+  });
+
+  it('counts change requests against the same limit', async () => {
+    const ctx = setup({ modelRateLimit: createMemoryRateLimiter({ limit: 1, windowMs: 60_000 }) });
+    const ip = { 'cf-connecting-ip': '203.0.113.8' };
+    await postJson(ctx.app, '/api/briefs', brief, ip);
+    const change = await postJson(ctx.app, '/api/scopes/any/changes', { text: 'Add a gallery page.' }, ip);
+    expect(change.status).toBe(429);
+  });
+
+  it('limits each caller separately', async () => {
+    const ctx = setup({ modelRateLimit: createMemoryRateLimiter({ limit: 1, windowMs: 60_000 }) });
+    await postJson(ctx.app, '/api/briefs', brief, { 'cf-connecting-ip': '203.0.113.9' });
+    const other = await postJson(ctx.app, '/api/briefs', brief, { 'cf-connecting-ip': '198.51.100.4' });
+    expect(other.status).not.toBe(429);
+  });
+
+  it('allows the caller again after the window passes', async () => {
+    let now = 0;
+    const ctx = setup({ modelRateLimit: createMemoryRateLimiter({ limit: 1, windowMs: 1_000, now: () => now }) });
+    const ip = { 'cf-connecting-ip': '203.0.113.10' };
+    await postJson(ctx.app, '/api/briefs', brief, ip);
+    now = 1_001;
+    const again = await postJson(ctx.app, '/api/briefs', brief, ip);
+    expect(again.status).not.toBe(429);
+  });
+
+  it('never limits read-only routes', async () => {
+    const ctx = setup({ modelRateLimit: createMemoryRateLimiter({ limit: 0, windowMs: 60_000 }) });
+    const res = await ctx.app.request('/api/catalog', { headers: { 'cf-connecting-ip': '203.0.113.11' } });
+    expect(res.status).toBe(200);
   });
 });

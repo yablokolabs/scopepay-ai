@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS briefs (
   id TEXT PRIMARY KEY,
   submitted_by TEXT NOT NULL,
   canonical_text TEXT NOT NULL,
-  text_hash TEXT NOT NULL UNIQUE,
+  text_hash TEXT NOT NULL,
   created_at TEXT NOT NULL
 );
 CREATE INDEX IF NOT EXISTS idx_briefs_text_hash ON briefs (text_hash);

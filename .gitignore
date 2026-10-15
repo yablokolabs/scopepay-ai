@@ -21,3 +21,4 @@ coverage/
 videos/out/
 media/out/
 .DS_Store
+.wrangler/

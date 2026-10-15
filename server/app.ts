@@ -5,8 +5,9 @@
  * map domain errors to status codes. No route computes a price or trusts a
  * client-supplied amount.
  */
-import { Hono } from 'hono';
+import { Hono, type MiddlewareHandler } from 'hono';
 import { z } from 'zod';
+import type { ModelRateLimit } from '../lib/rate-limit.js';
 import { CATALOG, STANDARD_EXCLUSIONS } from '../lib/catalog.js';
 import { CscsError, classifyChange, extractScope, type CscsConfig } from '../lib/cscs.js';
 import { PaypalError, type PaypalClient } from '../lib/paypal.js';
@@ -36,6 +37,8 @@ export interface AppEnv {
   requestKeyPrefix: string;
   publicBaseUrl: string;
   modelName: string | null;
+  /** Absent means unlimited, as in local development and tests. */
+  modelRateLimit?: ModelRateLimit;
 }
 
 function errorResponse(error: unknown): { body: unknown; status: number } {
@@ -87,6 +90,23 @@ export function createApp(env: AppEnv): Hono {
     requestKeyPrefix: env.requestKeyPrefix,
     publicBaseUrl: env.publicBaseUrl
   };
+
+  // Only the two routes that call the model are limited; every other route is free.
+  const modelRateLimit = env.modelRateLimit;
+  if (modelRateLimit) {
+    const limitModelCalls: MiddlewareHandler = async (c, next) => {
+      const caller = c.req.header('cf-connecting-ip') ?? c.req.header('x-forwarded-for')?.split(',')[0]?.trim() ?? 'unknown';
+      if (!(await modelRateLimit(caller))) {
+        return c.json(
+          { error: { code: 'rate_limited', message: 'Too many model requests from this address. Try again later.', details: [] } },
+          429
+        );
+      }
+      await next();
+    };
+    app.post('/api/briefs', limitModelCalls);
+    app.post('/api/scopes/:id/changes', limitModelCalls);
+  }
 
   app.get('/health', (c) =>
     c.json({
