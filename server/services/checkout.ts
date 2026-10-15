@@ -32,6 +32,12 @@ export interface CheckoutDeps {
   scopes: ScopeService;
   /** Null until the merchant configures sandbox credentials; the domain checks still run. */
   paypal: PaypalClient | null;
+  /**
+   * The PayPal payee merchant id this sandbox app collects into, as PayPal
+   * reports it. Distinct from `CATALOG.merchantId`, which is the local merchant
+   * label shown to the buyer.
+   */
+  paypalMerchantId: string | null;
   requestKeyPrefix: string;
   publicBaseUrl: string;
 }
@@ -240,7 +246,7 @@ export async function captureScopeOrder(
     expected: {
       amountMinor: attempt.expectedAmountMinor,
       currency: attempt.expectedCurrency,
-      merchantId: attempt.merchantId
+      merchantId: deps.paypalMerchantId
     },
     requestKey: attempt.requestKey
   });

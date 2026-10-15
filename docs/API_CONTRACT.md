@@ -12,7 +12,7 @@ Errors always use one envelope shape:
 
 ## Sandbox status of the payment routes
 
-The PayPal integration is **sandbox only**. `lib/paypal.ts` refuses to construct a client unless `env` is the literal `'sandbox'`, and its base URL is `https://api-m.sandbox.paypal.com`; there is no code path that reaches `api-m.paypal.com`. Without `PAYPAL_CLIENT_ID` / `PAYPAL_CLIENT_SECRET` the process builds no PayPal client and every route that would call PayPal answers:
+The PayPal integration is **sandbox only**. `lib/paypal.ts` refuses to construct a client unless `env` is the literal `'sandbox'`, and its base URL is `https://api-m.sandbox.paypal.com`; there is no code path that reaches `api-m.paypal.com`. The sandbox host accepts the configured credentials and the live host rejects them with `401 invalid_client`. Without `PAYPAL_CLIENT_ID` / `PAYPAL_CLIENT_SECRET` the process builds no PayPal client and every route that would call PayPal answers:
 
 | status | code | meaning |
 | --- | --- | --- |
@@ -114,6 +114,9 @@ Records acceptance of that hash, runs the server gate, then creates the PayPal s
 
 - `reusedExistingOrder: true` — an order already exists for this exact hash and was not yet captured; the existing order is returned instead of creating a second one.
 - `approvalUrl` — PayPal approval link (`payer-action` relative link) for the buyer; `null` if the provider returned none.
+- The order also carries `return_url` / `cancel_url` built from `PUBLIC_BASE_URL` (`{base}/checkout/return?scope=…`, `{base}/checkout/cancel?scope=…`). PayPal sends the buyer's **browser** there after approval, and only the client app implements those routes, so `PUBLIC_BASE_URL` must be the client origin — pointing it at the API process returns the buyer to a 404. Defaults to the local client origin; `server/config.ts` warns at startup when the value cannot work.
+
+The local idempotency key (`<prefix>:<scope-id>:<version-hash>`) is longer than PayPal accepts, so the client sends a deterministic projection of it with at most 38 characters as `Paypal-Request-Id`. PayPal answers a key longer than 108 characters with `HTTP 500 INTERNAL_SERVICE_ERROR` rather than a validation error, so the bound is enforced before the request leaves the client. The projection is a pure function of the local key, which is what keeps a retry idempotent.
 
 | status | code | when |
 | --- | --- | --- |
@@ -129,6 +132,8 @@ Records acceptance of that hash, runs the server gate, then creates the PayPal s
 Body: `{ orderId?: string }` — defaults to the most recent attempt for the scope.
 
 Re-reads the order from PayPal and refuses to capture unless the provider status is `APPROVED` and provider amount/currency match the stored attempt.
+
+The payee is checked against `PAYPAL_MERCHANT_ID`, PayPal's own merchant id for this sandbox app — not `MERCHANT_ID`, which is the human-readable catalog label. PayPal reports an opaque id (for example `H6EBGK2NMDSXC`), so comparing the two labels would refuse every capture. When `PAYPAL_MERCHANT_ID` is unset, the match is reported as **unverified** in the attempt's `lastError` rather than treated as a match or a failure.
 
 `200` → `{ attempt, captured, message, scopeStatus, amountFormatted }`
 

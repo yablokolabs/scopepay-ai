@@ -12,6 +12,7 @@
  * of capture.
  */
 import { z } from 'zod';
+import { sha256Hex } from './hashing.js';
 
 export interface PaypalConfig {
   clientId: string;
@@ -77,6 +78,34 @@ export interface PaypalCaptureResult {
 const DEFAULT_BASE_URL = 'https://api-m.sandbox.paypal.com';
 const DEFAULT_TIMEOUT_MS = 15_000;
 const TOKEN_EXPIRY_SKEW_MS = 60_000;
+
+/**
+ * Length PayPal accepts for the `Paypal-Request-Id` idempotency header.
+ *
+ * PayPal's idempotency documentation recommends a UUID, i.e. 38 single-byte
+ * characters. Measured against the sandbox Orders v2 API on 2026-10-14: 108
+ * characters is accepted, and 109 or more is answered with HTTP 500
+ * `INTERNAL_SERVICE_ERROR` rather than a validation error, so the value has to
+ * be bounded before the request leaves this client. This stays inside the
+ * documented maximum rather than the observed one.
+ */
+export const PAYPAL_REQUEST_ID_MAX_LENGTH = 38;
+
+/**
+ * Project a local idempotency key onto a value PayPal accepts.
+ *
+ * The local key is human-readable on purpose (prefix + scope version id +
+ * version hash) and lives in the store, but it is far longer than PayPal
+ * allows. Shortening it with a deterministic hash keeps the property that
+ * matters: the same local key always produces the same header value, so a
+ * retried create or capture replays the original request instead of starting a
+ * second purchase. A random or per-call value would silently break that.
+ */
+export function requestIdFor(requestKey: string): string {
+  if (requestKey.length <= PAYPAL_REQUEST_ID_MAX_LENGTH) return requestKey;
+  const suffixLength = PAYPAL_REQUEST_ID_MAX_LENGTH - 'sp-'.length;
+  return `sp-${sha256Hex(requestKey).slice(0, suffixLength)}`;
+}
 
 /** Integer cents -> PayPal's decimal string. No floating point arithmetic. */
 export function minorToDecimalString(minor: number): string {
@@ -368,7 +397,7 @@ export function createPaypalClient(config: PaypalConfig, fetchImpl: typeof fetch
         method: 'POST',
         path: '/v2/checkout/orders',
         token,
-        headers: { 'Paypal-Request-Id': input.requestKey },
+        headers: { 'Paypal-Request-Id': requestIdFor(input.requestKey) },
         body
       });
       if (!result.ok) {
@@ -393,7 +422,14 @@ export function createPaypalClient(config: PaypalConfig, fetchImpl: typeof fetch
 
     async captureOrder(input: {
       orderId: string;
-      expected: { amountMinor: number; currency: string; merchantId: string };
+      /**
+       * `merchantId` is the PayPal payee id this sandbox app collects for, not
+       * the human-readable merchant label in the catalog. It is null when the
+       * operator has not configured it, and a null expectation means "cannot
+       * verify", never "matches": refusing there would block a legitimate
+       * capture over a missing setting.
+       */
+      expected: { amountMinor: number; currency: string; merchantId: string | null };
       requestKey?: string;
     }): Promise<PaypalCaptureResult> {
       const notes: string[] = [];
@@ -419,9 +455,13 @@ export function createPaypalClient(config: PaypalConfig, fetchImpl: typeof fetch
       }
       if (order.merchantId === null) {
         notes.push('PayPal did not return a payee merchant_id for this order, so merchant match is unverified.');
+      } else if (input.expected.merchantId === null) {
+        notes.push(
+          `PayPal reported payee merchant ${order.merchantId}; no PAYPAL_MERCHANT_ID is configured, so merchant match is unverified.`
+        );
       } else if (order.merchantId !== input.expected.merchantId) {
         throw new PaypalError('merchant_mismatch', 'PayPal order was created for a different merchant account.', {
-          details: [`PayPal payee: ${order.merchantId}`, `ScopePay merchant: ${input.expected.merchantId}`]
+          details: [`PayPal payee: ${order.merchantId}`, `ScopePay expected payee: ${input.expected.merchantId}`]
         });
       }
       const token = await authedToken();
@@ -429,7 +469,7 @@ export function createPaypalClient(config: PaypalConfig, fetchImpl: typeof fetch
         method: 'POST',
         path: `/v2/checkout/orders/${encodeURIComponent(input.orderId)}/capture`,
         token,
-        headers: input.requestKey ? { 'Paypal-Request-Id': input.requestKey } : {},
+        headers: input.requestKey ? { 'Paypal-Request-Id': requestIdFor(input.requestKey) } : {},
         body: {}
       });
       if (!result.ok) {

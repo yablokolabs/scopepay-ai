@@ -1,15 +1,17 @@
 # Tooling status
 
-Observed during the October 13, 2026 session on the build host. This records what
-was actually reachable and used. Nothing here is inherited from a config label.
+Observed during the October 13–14, 2026 sessions on the build host. This records
+what was actually reachable and used. Nothing here is inherited from a config
+label.
 
 | Requirement | Observed state | What was actually done |
 | --- | --- | --- |
-| Hindsight MCP/API on port 8888, bank `scopepay-ai` | **Available.** `GET http://localhost:8888/health` → 200, port listening. No banks existed at session start, so the first recall returned `Bank 'scopepay-ai' not found`. | Bank `scopepay-ai` was created with the mandated name and a milestone checkpoint was written to it, including the credential blocker. No secrets, buyer data or raw headers were stored. |
+| Hindsight MCP/API on port 8888, bank `scopepay-ai` | **Available and used.** October 14: `GET /health` → 200; `GET /v1/default/banks` listed bank `scopepay-ai`; endpoints taken from the service's own `GET /openapi.json` rather than assumed. | Recalled the prior checkpoint from `scopepay-ai` (13 facts) and reconciled it against git and `docs/PROGRESS.md` — it matched: HEAD `6c25666`, 95/95 tests, blocker = no sandbox credentials. A new checkpoint was retained after this session's milestone. No secrets, buyer data or raw headers stored. |
 | `context-mode` | **Binary present** at `/home/azureuser/.local/node-v22.23.2/bin/context-mode`; no context-mode tools were exposed in this session's tool list. | Not used, and not claimed as active. Large reads were bounded direct file reads and targeted searches. |
 | Nori `senior-swe` | **Not installed.** The visible skill catalogs (`~/.agents/skills`, `~/.claude/skills`) contain `nori-info` and the Build With AI skills, but no `senior-swe` skillset. | Not activated. No similarly named package from a guessed repository was installed. |
 | Headroom | **Not verified.** No local MCP integration or proxy found on the host. | Not used and not claimed. |
 | ADHD ideation (`uditakhourii/adhd`) and `i-have-adhd` response style | **Not installed** in the visible catalogs. | The user-requested response style (short numbered steps, action first, concrete estimates, location → cause → fix) was followed directly; no separate skill was claimed to run. |
+| lightpanda | **Installed this session** by the user's request: `1.1.0-nightly.10552+dd2cd5d7f` at `~/.local/bin/lightpanda`, CDP server used on `127.0.0.1:9222`. Not a project dependency and not wired into the repo. | Used to attempt the PayPal sandbox buyer approval. It renders and fills PayPal's sign-in form, but PayPal's DataDome device check answers `403` with a captcha, so the login cannot complete from a non-Chromium engine. Recorded in `docs/proof/PROOF_M2_SANDBOX.md` section 7; stopped afterwards. |
 | Moli | **Installed this session** by the user's request: `1.1.17` at `~/.local/bin/moli` (standalone Rust browser kernel, no system libraries needed). CDP server used on `127.0.0.1:9222`. Not a project dependency and not wired into the repo. | Used to attempt the PayPal sandbox buyer approval. It presents as `Chrome/145.0.0.0` and **does** get past PayPal's bot checks: it filled and submitted the sign-in form and reached the logged-in dashboard. The approval then failed with PayPal's `CANNOT_PAY_SELF` because the configured account is the sandbox **seller**. Recorded in `docs/proof/PROOF_M2_SANDBOX.md` section 7. |
 | Real Chromium (Playwright) | **Installed this session with the owner's authorization, and verified by running it.** `npx playwright install` failed host validation twice; `sudo npx playwright install-deps chromium` resolved both rounds. The earlier note that its libraries were absent and "not needed" applied to the PayPal step alone — that step still ran on Moli, which needs none of them. | Launched Chromium `156.0.8078.4`, rendered a page at 640x360 with `deviceScaleFactor` 2, and wrote a real screenshot of 23518 bytes. Detail: [Video toolchain](#video-toolchain). |
 | Videowright | **Installed this session** into a `videos/` sub-folder at the owner's request: `videowright@0.1.1` plus its dev toolchain, following its own `INSTALL.md` (which requires a folder of its own) and `docs/MEDIA_WORKFLOWS.md` ("Isolate it in `videos/`"). Both skill symlinks exist at the install root and `SKILL.md` resolves through them. | Installed, patched for an upstream packaging bug it ships with, and used to export two real MP4s: the `toolchain_smoke` test (210 frames) and the **M2 demo cut's silent draft** (4500 frames, 150.0s). Narration is still missing. Detail and open items: [Video toolchain](#video-toolchain). |
@@ -220,7 +222,12 @@ audio, `check-export.mjs` passing on 12 sampled frames. Renders are not committe
   than approximated: `tilework-tech/nori-skillsets` (select `senior-swe`),
   `headroomlabs-ai/headroom`, `dietrichgebert/ponytail`, `uditakhourii/adhd`,
   `ayghri/i-have-adhd`, `scosman/videowright`, `cathrynlavery/diagram-design`.
+  Of these, `videowright` is now installed (see
+  [Video toolchain](#video-toolchain)) and `diagram-design` was used from a
+  repository checkout; the rest are still open.
 - Activating a skillset rewrites agent configuration and must not overwrite
-  `AGENTS.md` or `docs/SESSION_TOOLING.md`; that was not attempted.
+  `AGENTS.md` or `docs/SESSION_TOOLING.md`. Nothing overwrote either file:
+  videowright's installer added a marked region to `AGENTS.md` and changed no
+  existing line.
 - Hindsight and Headroom serve different purposes here. Hindsight is durable
   memory; Headroom is context compression. Neither was conflated with the other.

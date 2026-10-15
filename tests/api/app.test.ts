@@ -7,7 +7,12 @@
  */
 import { describe, expect, it } from 'vitest';
 import { CATALOG } from '../../lib/catalog.js';
-import { createPaypalClient, minorToDecimalString } from '../../lib/paypal.js';
+import {
+  PAYPAL_REQUEST_ID_MAX_LENGTH,
+  createPaypalClient,
+  minorToDecimalString,
+  requestIdFor
+} from '../../lib/paypal.js';
 import type { ScopeLine, ScopeVersion } from '../../lib/schemas.js';
 import { createScopeService } from '../../lib/scope.js';
 import { createMemoryStore } from '../../lib/store-memory.js';
@@ -17,6 +22,13 @@ const BRIEF_TEXT =
   'Ashgrove Bakery needs a small new website: one landing page plus a contact form. We will supply the text and the photos ourselves.';
 const CLIENT = 'client@example.com';
 const MERCHANT = 'merchant@example.com';
+/**
+ * PayPal reports the payee as the sandbox business account id, which is NOT the
+ * human-readable merchant label the catalog uses. The fake reports a distinct id
+ * so a capture check that compares our own label against PayPal's id fails here
+ * instead of only failing against the real sandbox.
+ */
+const PAYPAL_PAYEE_ID = 'H6EBGK2NMDSXC';
 
 interface RecordedCall {
   url: string;
@@ -62,7 +74,7 @@ function createFakePaypal() {
           reference_id: order.referenceId,
           custom_id: order.customId,
           amount: { currency_code: order.currency, value: order.amountValue },
-          payee: { merchant_id: CATALOG.merchantId },
+          payee: { merchant_id: PAYPAL_PAYEE_ID },
           ...(order.captureId
             ? {
                 payments: {
@@ -163,7 +175,7 @@ function createFakePaypal() {
   return { impl, calls, orders, state };
 }
 
-function setup() {
+function setup(overrides: { paypalMerchantId?: string | null } = {}) {
   const store = createMemoryStore();
   const scopes = createScopeService({ store });
   const fake = createFakePaypal();
@@ -175,6 +187,7 @@ function setup() {
     store,
     scopes,
     paypal,
+    paypalMerchantId: overrides.paypalMerchantId === undefined ? PAYPAL_PAYEE_ID : overrides.paypalMerchantId,
     cscs: { apiKey: 'test-key', baseUrl: 'http://model.invalid/v1', model: 'swiss-ai/Apertus-v1.5-70B' },
     requestKeyPrefix: 'scopepay-test',
     publicBaseUrl: 'http://localhost:8787',
@@ -417,10 +430,19 @@ describe('sandbox order creation', () => {
     const createCall = createOrderCalls(ctx).find(() => true);
     expect(createCall).toBeDefined();
     const headers = createCall?.init.headers as Record<string, string>;
-    expect(headers['Paypal-Request-Id']).toBe(`scopepay-test:${v2.id}:${v2.hash}`);
+    // The local key stays readable and unique per version, but PayPal rejects a
+    // PayPal-Request-Id longer than 108 characters with HTTP 500, so the client
+    // projects it onto the documented 38-character form before sending.
+    const localRequestKey = `scopepay-test:${v2.id}:${v2.hash}`;
+    expect(localRequestKey.length).toBeGreaterThan(108);
+    const sentRequestId = headers['Paypal-Request-Id'] ?? '';
+    expect(sentRequestId).not.toBe(localRequestKey);
+    expect(sentRequestId).toBe(requestIdFor(localRequestKey));
+    expect(sentRequestId.length).toBeLessThanOrEqual(PAYPAL_REQUEST_ID_MAX_LENGTH);
 
     const payload = JSON.parse(String(createCall?.init.body)) as {
       intent: string;
+      application_context: { return_url: string; cancel_url: string };
       purchase_units: {
         amount: { currency_code: string; value: string };
         custom_id: string;
@@ -428,6 +450,11 @@ describe('sandbox order creation', () => {
       }[];
     };
     expect(payload.intent).toBe('CAPTURE');
+    // PayPal sends the buyer's browser to these URLs, so they must point at the
+    // origin that serves the client — not at this API process, which has no
+    // /checkout/* route and would answer the returning buyer with a 404.
+    expect(payload.application_context.return_url).toBe(`http://localhost:8787/checkout/return?scope=${v2.id}`);
+    expect(payload.application_context.cancel_url).toBe(`http://localhost:8787/checkout/cancel?scope=${v2.id}`);
     const unit = payload.purchase_units.find(() => true);
     expect(unit?.amount).toEqual({ currency_code: 'USD', value: minorToDecimalString(v2.amountMinor) });
     expect(unit?.custom_id).toBe(v2.id);
@@ -510,6 +537,32 @@ describe('capture', () => {
     expect(res.status).toBe(502);
     expect(((await res.json()) as { error: { code: string } }).error.code).toBe('paypal_not_approved');
     expect(captureCalls(ctx).length).toBe(0);
+  });
+
+  it('refuses to capture an order paid to a different PayPal merchant account', async () => {
+    const ctx = setup({ paypalMerchantId: 'A-DIFFERENT-PAYEE' });
+    const { v2 } = await payableScope(ctx);
+    await acceptAndCreateOrder(ctx, v2);
+    const orderId = await orderIdOf(ctx, v2);
+
+    const res = await postJson(ctx.app, `/api/scopes/${v2.id}/capture`, { orderId });
+    expect(res.status).toBe(502);
+    expect(((await res.json()) as { error: { code: string } }).error.code).toBe('paypal_merchant_mismatch');
+    // The provider was never asked to move money for the wrong payee.
+    expect(captureCalls(ctx).length).toBe(0);
+  });
+
+  it('captures and reports an unverified payee when no PayPal merchant id is configured', async () => {
+    const ctx = setup({ paypalMerchantId: null });
+    const { v2 } = await payableScope(ctx);
+    await acceptAndCreateOrder(ctx, v2);
+    const orderId = await orderIdOf(ctx, v2);
+
+    const res = await postJson(ctx.app, `/api/scopes/${v2.id}/capture`, { orderId });
+    expect(res.status).toBe(200);
+    const body = (await res.json()) as { captured: boolean; attempt: { state: string } };
+    expect(body.captured).toBe(true);
+    expect(body.attempt.state).toBe('captured');
   });
 
   it('refuses to capture an order once its scope version has been superseded', async () => {

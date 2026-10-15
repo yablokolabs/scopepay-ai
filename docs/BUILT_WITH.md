@@ -5,12 +5,12 @@ honest tags.
 
 | Tag | Verified by |
 | --- | --- |
-| `paypal` | PayPal sandbox REST client in `lib/paypal.ts`: OAuth token, order create/get/capture, and webhook signature verification through `POST /v1/notifications/verify-webhook-signature`. Covered by the domain and API tests. The live sandbox capture and its proof land with the M2 work and are not claimed here yet. |
-| `apertus` | Live `swiss-ai/Apertus-v1.5-70B` on CSCS inference for brief extraction: `/models` 200 and `/chat/completions` 200, recorded in `docs/proof/SMOKE_TEST_M0.md`. |
+| `paypal` | Real PayPal **sandbox** REST calls: `POST /v1/oauth2/token` (200), `POST /v2/checkout/orders` (real order created), `GET /v2/checkout/orders/:id`, `POST /v2/checkout/orders/:id/capture` — first refused with 422 `ORDER_NOT_APPROVED`, then completed for real once a sandbox buyer approved, returning capture id `6YS286962F723210Y` (`COMPLETED`, `1640.00 USD`). Recorded in `docs/proof/PROOF_M2_SANDBOX.md`. Sandbox app credentials only; the live host rejects them. |
+| `apertus` | Live `swiss-ai/Apertus-v1.5-70B` on CSCS inference for brief extraction and change classification, with real latency/token metadata recorded in `docs/proof/`. |
 | `typescript` | The whole codebase; `tsc --noEmit` clean. |
 | `react` | The client (`app/src`), built by Vite. |
 | `zod` | Every untrusted input boundary: HTTP bodies, model output, provider payloads. |
-| `vitest` | 95 tests across 5 suites (`npm test`). |
+| `vitest` | 109 tests across 6 suites (`npm test`). |
 | `hono` | Server routes in `server/app.ts`, run on `@hono/node-server` locally. |
 | `vite` | Client build (`npm run build`). |
 | `diagram-design` | `docs/architecture` and `docs/payment-flow`, built from a checkout pinned at `11b08ea`. Its `self_check.py` and `verify-geometry.py` pass on both. |

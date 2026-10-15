@@ -129,8 +129,11 @@ new version: v5 lines: landing-page x1, content-page x7, copy-editing x1,
 ## 8. What is still unproven
 
 - No PayPal sandbox order, approval, capture, webhook or reconciliation has been
-  executed against PayPal. Those paths are covered by mocked-transport tests
-  only, which do not prove real provider behaviour.
+  executed against PayPal **at the time of this M0/M1 run**. Those paths were
+  covered by mocked-transport tests only, which do not prove real provider
+  behaviour. Superseded for the payment half by
+  [`PROOF_M2_SANDBOX.md`](PROOF_M2_SANDBOX.md), which records a real order,
+  approval and capture; webhook verification remains unproven there too.
 - The evaluation in `docs/EVALUATION.md` (per-field precision/recall over the 20
   frozen briefs) has not been run; only single live calls are recorded above.
 - No currency other than USD, no tax, no shipping, no refund has been exercised.
@@ -140,6 +143,6 @@ new version: v5 lines: landing-page x1, content-page x7, copy-editing x1,
 ```bash
 npm install
 cp .env.example .env    # then set CSCS_INFERENCE_API_KEY; add PayPal sandbox keys to test payments
-npm run check           # typecheck + 95 tests
+npm run check           # typecheck + tests (95 when this run was recorded; the suite has grown since)
 npm run start           # http://localhost:8790
 ```

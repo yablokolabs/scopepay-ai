@@ -5,12 +5,14 @@
 **Repository:** [yablokolabs/scopepay-ai](https://github.com/yablokolabs/scopepay-ai) (public).
 **Elevator pitch:** An AI scope-to-checkout assistant for freelancers that turns messy briefs into reviewed deliverables and prices, then links the approved scope to a PayPal sandbox payment.
 
-Build state: implementation running end to end for the scope half — brief →
-Apertus extraction → merchant review → immutable version → buyer acceptance →
-version-bound change requests — with the PayPal half implemented but **not yet
-exercised against PayPal**, because no sandbox credentials exist on the build
-host. Nothing in this repository moves real money, and no live PayPal credential
-is supported by design.
+Build state: the scope half runs end to end — brief → Apertus extraction →
+merchant review → immutable version → buyer acceptance → version-bound change
+requests — and the payment half has been **completed against real PayPal sandbox
+end to end**: a sandbox buyer approved the order on PayPal's own page and the
+server captured it, producing a **real capture id** (`6YS286962F723210Y`,
+`COMPLETED`, `1640.00 USD`), which the sandbox merchant's own wallet shows as a
+received payment. Nothing in this repository moves real money, and no live PayPal
+credential is supported by design.
 
 ## What runs today
 
@@ -19,14 +21,16 @@ is supported by design.
 | Brief → extraction | `POST /api/briefs` | live against CSCS Apertus 1.5 70B |
 | Merchant review | `POST /api/scopes/:id/review` | working, quantity-only edits |
 | Buyer acceptance | `POST /api/scopes/:id/accept` | working, hash + amount + currency checks |
-| Sandbox order | `POST /api/scopes/:id/orders` | implemented, returns 503 until credentials are set |
-| Capture | `POST /api/scopes/:id/capture` | implemented, refuses anything not `APPROVED`, mock-tested only |
-| Reconciliation | `POST /api/scopes/:id/reconcile` | implemented, mock-tested only |
-| Webhook | `POST /api/webhooks/paypal` | implemented, signature-verified, mock-tested only |
+| Sandbox order | `POST /api/scopes/:id/orders` | **live against real PayPal sandbox**; returns 503 until credentials are set |
+| Capture | `POST /api/scopes/:id/capture` | **live end to end**; captured a buyer-approved sandbox order into a real capture id (`6YS286962F723210Y`), and refuses anything not `APPROVED` |
+| Reconciliation | `POST /api/scopes/:id/reconcile` | **live against real PayPal sandbox** |
+| Webhook | `POST /api/webhooks/paypal` | **live-verified with PayPal's own verifier**: a real signed delivery accepted, a forged signature refused. Receiving deliveries needs a publicly reachable HTTPS URL, so registration is a deployment step |
 | Change request | `POST /api/scopes/:id/changes` | live via Apertus, server-priced |
 
 Recorded evidence, including the exact commands and the defects they exposed:
-[`docs/proof/SMOKE_TEST_M0.md`](docs/proof/SMOKE_TEST_M0.md).
+[`docs/proof/SMOKE_TEST_M0.md`](docs/proof/SMOKE_TEST_M0.md) (scope half) and
+[`docs/proof/PROOF_M2_SANDBOX.md`](docs/proof/PROOF_M2_SANDBOX.md) (PayPal
+sandbox half).
 
 ## Architecture
 
@@ -76,6 +80,12 @@ npm run check              # typecheck + tests
 npm run dev                # API on :8790, client on :5173
 ```
 
+`PUBLIC_BASE_URL` must name the origin that serves the client, because PayPal
+returns the buyer's browser there after approval. It defaults to the local client
+origin (`http://localhost:5173`) rather than to the API process, which serves no
+`/checkout/*` route; set it explicitly for any non-local deployment. Startup
+prints the value in use and warns when it cannot work.
+
 Without PayPal sandbox credentials the payment routes answer
 `503 paypal_not_configured` and the checkout control is disabled rather than
 faked. Screen and document copy carries explicit `SANDBOX` labels; there is no
@@ -86,7 +96,13 @@ footer, copyright bar or credits strip on any page.
 - Not production-ready: sandbox only, one merchant, one USD catalog, no tax,
   no shipping, no refunds, no payouts, no marketplace.
 - The PayPal client refuses any environment other than `sandbox`.
-- Local mocked payment tests do not prove real PayPal error behaviour.
+- **A real capture id exists:** `6YS286962F723210Y` (`COMPLETED`, `1640.00 USD`),
+  from a live run — real order, buyer approval on PayPal's own page, server
+  capture — confirmed on the seller side as a received payment. Webhook signature
+  verification is proven against PayPal's verifier too. What is still unexercised:
+  a signed event that *applies* state (a simulated event matches no local
+  attempt), redelivery of a real event (PayPal's resend endpoint answered 404 for
+  a simulated one), and timeouts and declines.
 - The extraction evaluation over the 20 frozen briefs is not yet measured.
 - Deviation from `PROJECT_BUILD.md`: this build uses Vite + React with a Hono
   server instead of the Sites Vinext starter, because the Sites/Vinext tooling is

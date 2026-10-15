@@ -1,9 +1,11 @@
 import { describe, expect, it } from 'vitest';
 import {
+  PAYPAL_REQUEST_ID_MAX_LENGTH,
   PaypalError,
   createPaypalClient,
   decimalStringToMinor,
   minorToDecimalString,
+  requestIdFor,
   type PaypalConfig
 } from '../../lib/paypal.js';
 
@@ -32,6 +34,15 @@ function makeFetch(handler: (url: string, init: RequestInit) => Response | Promi
 }
 
 const TOKEN_URL = '/v1/oauth2/token';
+
+/** The Paypal-Request-Id actually sent on the nth call to `suffix`. */
+function sentRequestId(calls: RecordedCall[], suffix: string, index = 0): string {
+  const call = calls.filter((candidate) => candidate.url.endsWith(suffix))[index];
+  if (!call) throw new Error(`expected a call to ${suffix} at index ${index}`);
+  const value = (call.init.headers as Record<string, string>)['Paypal-Request-Id'];
+  if (typeof value !== 'string') throw new Error(`no Paypal-Request-Id was sent to ${suffix}`);
+  return value;
+}
 
 function tokenResponse() {
   return json({ access_token: 'tok-1', expires_in: 3600, token_type: 'Bearer' });
@@ -199,6 +210,73 @@ describe('order creation', () => {
     expect(body.purchase_units[0].custom_id).toBe('scope-1');
     expect(body.purchase_units[0].reference_id).toBe(SCOPE_HASH);
   });
+
+  it('keeps the idempotency header inside the length PayPal accepts', async () => {
+    const { client, calls } = makeClient((url) =>
+      url.includes('/v2/checkout/orders') ? json({ id: 'ORDER-1', status: 'CREATED', links: [] }) : tokenResponse()
+    );
+    // The real key the checkout service builds: prefix + scope version id + version hash.
+    const localKey = `scopepay:scope-68696e25-7129-47f8-b93e-9766f787ec68:${SCOPE_HASH}`;
+    expect(localKey.length).toBeGreaterThan(PAYPAL_REQUEST_ID_MAX_LENGTH);
+
+    await client.createOrder({
+      scopeRef: 'scope-1',
+      scopeHash: SCOPE_HASH,
+      amountMinor: 1234,
+      currency: 'USD',
+      merchantId: 'M-1',
+      requestKey: localKey,
+      returnUrl: 'http://localhost:5173/checkout/return',
+      cancelUrl: 'http://localhost:5173/checkout/cancel',
+      description: 'ScopePay sandbox order'
+    });
+
+    // PayPal answers an over-long PayPal-Request-Id with HTTP 500, not a 4xx,
+    // so the limit has to be enforced before the call leaves this client.
+    const sent = sentRequestId(calls, '/v2/checkout/orders');
+    expect(sent.length).toBeLessThanOrEqual(PAYPAL_REQUEST_ID_MAX_LENGTH);
+    expect(sent).toBe(requestIdFor(localKey));
+  });
+
+  it('replays the same idempotency header when a create is retried', async () => {
+    const { client, calls } = makeClient((url) =>
+      url.includes('/v2/checkout/orders') ? json({ id: 'ORDER-1', status: 'CREATED', links: [] }) : tokenResponse()
+    );
+    const localKey = `scopepay:scope-68696e25-7129-47f8-b93e-9766f787ec68:${SCOPE_HASH}`;
+    const input = {
+      scopeRef: 'scope-1',
+      scopeHash: SCOPE_HASH,
+      amountMinor: 1234,
+      currency: 'USD',
+      merchantId: 'M-1',
+      requestKey: localKey,
+      returnUrl: 'http://localhost:5173/checkout/return',
+      cancelUrl: 'http://localhost:5173/checkout/cancel',
+      description: 'ScopePay sandbox order'
+    };
+    await client.createOrder(input);
+    await client.createOrder(input);
+
+    expect(calls.filter((call) => call.url.endsWith('/v2/checkout/orders'))).toHaveLength(2);
+    // Same key on retry is what makes PayPal return the original order instead
+    // of creating a second one; a per-call value would silently double-charge.
+    expect(sentRequestId(calls, '/v2/checkout/orders', 0)).toBe(sentRequestId(calls, '/v2/checkout/orders', 1));
+  });
+});
+
+describe('idempotency key projection', () => {
+  it('passes a key that already fits through unchanged', () => {
+    expect(requestIdFor('key-1')).toBe('key-1');
+    expect(requestIdFor('a'.repeat(PAYPAL_REQUEST_ID_MAX_LENGTH))).toBe('a'.repeat(PAYPAL_REQUEST_ID_MAX_LENGTH));
+  });
+
+  it('shortens a long key deterministically, without collapsing distinct keys', () => {
+    const longKey = `scopepay:scope-68696e25-7129-47f8-b93e-9766f787ec68:${SCOPE_HASH}`;
+    const projected = requestIdFor(longKey);
+    expect(projected.length).toBeLessThanOrEqual(PAYPAL_REQUEST_ID_MAX_LENGTH);
+    expect(requestIdFor(longKey)).toBe(projected);
+    expect(requestIdFor(`${longKey}-other`)).not.toBe(projected);
+  });
 });
 
 describe('capture', () => {
@@ -232,6 +310,48 @@ describe('capture', () => {
       currency: 'USD',
       payerEmail: 'buyer@example.com'
     });
+  });
+
+  it('keeps the capture idempotency header inside the length PayPal accepts', async () => {
+    const { client, calls } = makeClient((url) => {
+      if (url.includes('/capture')) return json(captureBody());
+      if (url.includes('/v2/checkout/orders')) return json(orderBody());
+      return tokenResponse();
+    });
+    const localKey = `scopepay:scope-68696e25-7129-47f8-b93e-9766f787ec68:${SCOPE_HASH}`;
+    expect(localKey.length).toBeGreaterThan(PAYPAL_REQUEST_ID_MAX_LENGTH);
+    await client.captureOrder({ orderId: 'ORDER-1', expected: EXPECTED, requestKey: localKey });
+
+    const sent = sentRequestId(calls, '/capture');
+    expect(sent.length).toBeLessThanOrEqual(PAYPAL_REQUEST_ID_MAX_LENGTH);
+    expect(sent).toBe(requestIdFor(localKey));
+  });
+
+  it('captures without a payee check when no PayPal merchant id is configured, and says so', async () => {
+    const { client } = makeClient((url) => {
+      if (url.includes('/capture')) return json(captureBody());
+      if (url.includes('/v2/checkout/orders')) {
+        return json(
+          orderBody({
+            purchase_units: [
+              {
+                reference_id: SCOPE_HASH,
+                custom_id: 'scope-1',
+                amount: { currency_code: 'USD', value: '12.34' },
+                payee: { merchant_id: 'A-REAL-PAYPAL-PAYEE-ID' }
+              }
+            ]
+          })
+        );
+      }
+      return tokenResponse();
+    });
+
+    // Unconfigured means "we cannot verify this", not "this is wrong": refusing
+    // here would block a legitimate sandbox capture for a missing setting.
+    const result = await client.captureOrder({ orderId: 'ORDER-1', expected: { ...EXPECTED, merchantId: null } });
+    expect(result.captureId).toBe('CAP-1');
+    expect(result.providerMessage).toContain('unverified');
   });
 
   it('returns a non-completed provider status unchanged', async () => {
