@@ -403,7 +403,8 @@ recorded for audit and changes no money state.
 simulator events are mock events that "cannot be verified". This run used the
 API simulator (`/v1/notifications/simulate-event`) against a registered webhook
 id, and the verifier answered `SUCCESS`. The two statements conflict, and the run
-has not been repeated, so treat the `SUCCESS` side as unconfirmed. The forged
+has not been repeated, so treat the `SUCCESS` side as unconfirmed. Section 11.1 later
+records real events for a hosted order, which PayPal's verifier accepted. The forged
 `FAILURE` in §9.3 does not depend on it. A real event for a local order is
 the proof that settles it (see §12).
 
@@ -497,6 +498,25 @@ order 05T53487Y0618223Y  capture 2E2674460M099332D  COMPLETED  146000 USD (expec
 
 The second run used only the committed scripts. The buyer's credentials came
 from the environment and appear in no file or log.
+
+### 11.1 Real signed webhooks for a hosted order
+
+A PayPal webhook was registered on the hosted URL and its id set as the Worker
+secret `PAYPAL_WEBHOOK_ID`. The owner then approved order `85556611218642647` by
+hand, and the client captured it as `70J91999JH7336835` at 09:53:45. PayPal
+delivered two real events about 35 seconds later:
+
+```text
+CHECKOUT.ORDER.APPROVED    verified  duplicate  09:54:21  Approval event arrived after state captured; ignored.
+PAYMENT.CAPTURE.COMPLETED  verified  duplicate  09:54:24  Capture already recorded; terminal state left unchanged.
+```
+
+PayPal's own verifier accepted both signatures, and both events matched a local
+payment attempt. This settles the open question in section 9.2: real events
+verify. Both arrived after the capture, so the handler left the terminal state
+unchanged, which is correct. An automated run that blocks the return redirect,
+so that only a webhook can move the attempt, stopped at PayPal's sign-in
+captcha after repeated automated logins.
 
 ## 12. Still unproven
 
