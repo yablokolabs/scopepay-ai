@@ -536,7 +536,7 @@ captcha after repeated automated logins.
 ```bash
 npm install
 cp .env.example .env    # sandbox app credentials + PAYPAL_MERCHANT_ID
-npm run check           # typecheck + 109 tests
+npm run check           # typecheck + 125 tests
 npm run start           # http://localhost:8790
 node docs/proof/m2-sandbox-flow.mjs
 ```

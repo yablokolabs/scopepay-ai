@@ -1,14 +1,14 @@
 # Tooling status
 
-Observed during the October 13–14, 2026 sessions on the build host. This records
+Observed during the October 13–15, 2026 sessions on the build host. This records
 what was actually reachable and used. Nothing here is inherited from a config
 label.
 
 | Requirement | Observed state | What was actually done |
 | --- | --- | --- |
 | Hindsight MCP/API on port 8888, bank `scopepay-ai` | **Available and used.** October 14: `GET /health` → 200; `GET /v1/default/banks` listed bank `scopepay-ai`; endpoints taken from the service's own `GET /openapi.json` rather than assumed. | Recalled the prior checkpoint from `scopepay-ai` (13 facts) and reconciled it against git and `docs/PROGRESS.md` — it matched: HEAD `6c25666`, 95/95 tests, blocker = no sandbox credentials. A new checkpoint was retained after this session's milestone. No secrets, buyer data or raw headers stored. |
-| `context-mode` | **Binary present** at `/home/azureuser/.local/node-v22.23.2/bin/context-mode`; no context-mode tools were exposed in this session's tool list. | Not used, and not claimed as active. Large reads were bounded direct file reads and targeted searches. |
-| Nori `senior-swe` | **Not installed.** The visible skill catalogs (`~/.agents/skills`, `~/.claude/skills`) contain `nori-info` and the Build With AI skills, but no `senior-swe` skillset. | Not activated. No similarly named package from a guessed repository was installed. |
+| `context-mode` | **Active on October 15**: its tools were exposed and used for API calls and large outputs. Earlier: **binary present** at `/home/azureuser/.local/node-v22.23.2/bin/context-mode`; no context-mode tools were exposed in this session's tool list. | Not used, and not claimed as active. Large reads were bounded direct file reads and targeted searches. |
+| Nori `senior-swe` | **Active on October 15**: the Nori workflow block and skills are installed in `~/.claude`, and the branch, TDD and PR steps were followed. Earlier: **not installed.** The visible skill catalogs (`~/.agents/skills`, `~/.claude/skills`) contain `nori-info` and the Build With AI skills, but no `senior-swe` skillset. | Not activated. No similarly named package from a guessed repository was installed. |
 | Headroom | **Not verified.** No local MCP integration or proxy found on the host. | Not used and not claimed. |
 | ADHD ideation (`uditakhourii/adhd`) and `i-have-adhd` response style | **Not installed** in the visible catalogs. | The user-requested response style (short numbered steps, action first, concrete estimates, location → cause → fix) was followed directly; no separate skill was claimed to run. |
 | lightpanda | **Installed this session** by the user's request: `1.1.0-nightly.10552+dd2cd5d7f` at `~/.local/bin/lightpanda`, CDP server used on `127.0.0.1:9222`. Not a project dependency and not wired into the repo. | Used to attempt the PayPal sandbox buyer approval. It renders and fills PayPal's sign-in form, but PayPal's DataDome device check answers `403` with a captcha, so the login cannot complete from a non-Chromium engine. Recorded in `docs/proof/PROOF_M2_SANDBOX.md` section 7; stopped afterwards. |
