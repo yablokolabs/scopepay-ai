@@ -3,9 +3,11 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { randomUUID } from 'node:crypto';
 import { afterAll, beforeEach, describe, expect, it } from 'vitest';
+import { Miniflare } from 'miniflare';
+import { createD1Store } from '../../lib/store-d1.js';
 import { createFileStore } from '../../lib/store-file.js';
 import { createMemoryStore } from '../../lib/store-memory.js';
-import type { Store } from '../../lib/persistence.js';
+import type { D1Like, Store } from '../../lib/persistence.js';
 import type { Brief, EventRecord, PaymentAttempt, ScopeVersion } from '../../lib/schemas.js';
 
 const tempFiles: string[] = [];
@@ -98,12 +100,12 @@ function makeEvent(overrides: Partial<EventRecord> = {}): EventRecord {
   };
 }
 
-function runStoreSuite(name: string, makeStore: () => Store) {
+function runStoreSuite(name: string, makeStore: () => Store | Promise<Store>) {
   describe(name, () => {
-    let store: Store = makeStore();
+    let store!: Store;
 
-    beforeEach(() => {
-      store = makeStore();
+    beforeEach(async () => {
+      store = await makeStore();
     });
 
     it('inserts a scope once and rejects a duplicate id', async () => {
@@ -241,6 +243,33 @@ function runStoreSuite(name: string, makeStore: () => Store) {
 
 runStoreSuite('memory store', createMemoryStore);
 runStoreSuite('file store', () => createFileStore(tempStorePath()));
+
+/**
+ * The same suite against real D1 semantics: Miniflare runs Cloudflare's own D1
+ * engine locally. Each test gets a fresh database with the real migration applied.
+ */
+const miniflares: Miniflare[] = [];
+afterAll(async () => {
+  await Promise.all(miniflares.map((mf) => mf.dispose()));
+});
+async function freshD1Store(): Promise<Store> {
+  const mf = new Miniflare({
+    modules: true,
+    script: 'export default { fetch() { return new Response(null, { status: 404 }); } }',
+    d1Databases: { DB: randomUUID() }
+  });
+  miniflares.push(mf);
+  const db = await mf.getD1Database('DB');
+  const sql = await readFile(join(process.cwd(), 'migrations', '0001_init.sql'), 'utf8');
+  const statements = sql
+    .replace(/--.*$/gm, '')
+    .split(';')
+    .map((statement) => statement.trim())
+    .filter(Boolean);
+  await db.batch(statements.map((statement) => db.prepare(statement)));
+  return createD1Store(db as unknown as D1Like);
+}
+runStoreSuite('d1 store (Miniflare)', freshD1Store);
 
 describe('d1 migration', () => {
   it('creates every table the adapter reads and writes', async () => {
